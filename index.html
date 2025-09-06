@@ -861,6 +861,13 @@ window.onload = function(event) {
     mapParam.markerName = param;
   }
 
+  try {
+  // clear location hash
+    history.pushState('', document.title, window.location.pathname + window.location.search);
+  } catch(error) {
+    console.log('handled error', error);
+  }
+
 
   window.addEventListener("keydown", function (e) {
 
