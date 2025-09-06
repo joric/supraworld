@@ -528,11 +528,13 @@ function addMarkers(markers, options) {
   function toggleGroup(group) {
     searchControl._input.value='';
     filterItems({group: group});
+    location.hash = '';
   }
 
   function toggleItem(type) {
     searchControl._input.value='';
     filterItems({type:type});
+    location.hash = '';
   }
 
   // let tr = s=> typeData[s]?.title || (s[0].toUpperCase()+s.slice(1));
@@ -836,6 +838,7 @@ function loadMap(mapId) {
 
   searchControl = new SearchControl();
   searchControl._handleSubmit = function() {
+    location.hash = '';
     filterItemsExt(searchControl._input.value);
   }
 
@@ -900,15 +903,12 @@ window.onload = function(event) {
     mapParam.markerName = param;
   }
 
-  /*
   try {
   // clear location hash
     history.pushState('', document.title, window.location.pathname + window.location.search);
   } catch(error) {
     console.log('handled error', error);
   }
-  */
-
 
   window.addEventListener("keydown", function (e) {
 
