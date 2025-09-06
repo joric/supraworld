@@ -183,5 +183,7 @@
   "magnet": {"class":"fa fa-magnet","bg":"firebrick"},
   "fire": {"class":"fa fa-fire","bg":"orange"},
   "fire_simple": {"class":"fa fa-fire-flame-simple","bg":"orange"},
-  "lock_grey": {"class":"fa fa-lock","bg":"grey"}
+  "lock_grey": {"class":"fa fa-lock","bg":"grey"},
+
+  "launch_target": {"class":"fa fa-circle-chevron-down","bg":"dodgerblue"}
 }

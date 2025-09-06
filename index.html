@@ -458,7 +458,11 @@ function loadMarkersBatched(features, options) {
       let o = feature.properties;
 
       if (o.spawns) {
-        batch.push(addMarker({...feature, 'properties': {'name': o.name +':spawns', 'type': o.spawns}}, options));
+        batch.push(addMarker({...feature, properties: { name: o.name +':spawns', type: o.spawns}}, options));
+      }
+
+      if (o.target) {
+        batch.push(addMarker({...feature, geometry: {coordinates: o.target}, properties: {name: o.name +':target', type: '_Launch_Target_C'}}, options));
       }
 
     }

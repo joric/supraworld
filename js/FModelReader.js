@@ -48,6 +48,7 @@ function markerLoader(data) {
   let outers = {};
   let meshes = {};
   let messengers = {};
+  let targets = {};
 
   function getMatrix(o, matrix) {
     matrix = matrix || new THREE.Matrix4();
@@ -110,6 +111,7 @@ function markerLoader(data) {
     }
     if (o.Type=='StaticMeshComponent') meshes[o.Outer] = o;
     if (o.Type=='MessengerComponent') messengers[o.Outer] = o;
+    if (o.Type=='SupraworldLaunchComponent_C') targets[o.Outer] = o;
   }
 
   let features = [];
@@ -162,7 +164,11 @@ function markerLoader(data) {
     }
 
     if ((m = messengers[o.Name]) && (s = m.Properties?.MessageEvents?.[0]?.TargetActor?.SubPathString)) {
-      prop.target = s.split('.').pop();
+      prop.actor = s.split('.').pop();
+    }
+
+    if ((m = targets[o.Name]) && (t = m.Properties?.TargetLocation)) {
+      prop.target = [t.X, t.Y, t.Z];
     }
 
     features.push(feature);

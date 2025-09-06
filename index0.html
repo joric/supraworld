@@ -142,7 +142,7 @@ let maps = {
   'sw': {
     "size": 200000,
     "center": [0,0],
-    "tiles": 'tiles/{z}/{x}/{y}.png',
+    "tiles": 'tiles/sw/V4/{z}/{x}/{y}.jpg',
     "maxZoom": 4,
   },
 }
@@ -425,7 +425,7 @@ function loadMarkers(data, mapId) {
   };
 
 
-  let baseLayer = L.tileLayer.canvas('tiles/{z}/{x}/{y}.png', layerOptions).addTo(map);
+  let baseLayer = L.tileLayer.canvas(config.tiles, layerOptions).addTo(map);
 
 /*
   for (const [id,config] of Object.entries(maps)) {
@@ -798,7 +798,7 @@ function loadMap(mapId) {
   })
   */
 
-  loadGzip('data/Supraworld.json.gz');
+  loadGzip('data/Supraworld.7876.json.gz');
 
 
   document.querySelectorAll('.btn').forEach(e=>e.id==mapId ? e.classList.add('selected') : e.classList.remove('selected'));
