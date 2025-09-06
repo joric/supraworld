@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Joric's Supraworld</title>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="shortcut icon" type="image/x-icon" href="data:," />
+
+<meta property="og:image" content="" />
+<meta property="og:site_name" content="Joric" />
+<meta property="og:type" content="object" />
+<meta property="og:title" content="Joric's Supraworld" />
+<meta property="og:description" content="Supraworld Interactive Map" />
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/leaflet-edgebuffer@1.0.7/src/leaflet.edgebuffer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tilelayer-canvas@1.1.5/index.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/leaflet-search@4.0.0/dist/leaflet-search.src.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-search@4.0.0/dist/leaflet-search.src.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@4.0.0/Control.FullScreen.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@4.0.0/Control.FullScreen.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/leaflet-toolbar@0.4.0-alpha.2/dist/leaflet.toolbar.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-toolbar@0.4.0-alpha.2/dist/leaflet.toolbar.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-mouse-position@1.2.0/src/L.Control.MousePosition.min.css">
+<script src="https://cdn.jsdelivr.net/npm/leaflet-mouse-position@1.2.0/src/L.Control.MousePosition.min.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+<script src="https://unpkg.com/leaflet.featuregroup.subgroup@1.0.2/dist/leaflet.featuregroup.subgroup.js"></script>
+
+<script src="js/three-onlymath.min.js"></script>
+
+
+<style>
+
+html, body, #map { width:100%; height: 100%; margin: 0; padding: 0; background: black; }
+
+.controls {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.controls .btn {
+  display: block;
+  width: 100px;
+  height: 32px;
+}
+
+.selected {
+  border: 2px solid Highlight;
+}
+
+.found {
+  opacity: .5 !important;
+}
+
+.github-corner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.icon-base i {
+  text-align: center;
+  position: absolute;
+  color: white;
+  width: 64px;
+  font-size: 28px;
+  top: 10px;
+}
+
+.icon-base::before{
+  font-family: 'Font Awesome 7 Free';
+  font-weight: 900;
+  content: "\f041";
+  text-align: center;
+  position: absolute;
+  width: 64px;
+  font-size: 64px;
+  top: -16px;
+}
+
+.icon-48 i {
+  width: 48px;
+  font-size: 20px;
+  top: 4px;
+}
+
+.icon-48::before {
+  width: 48px;
+  font-size: 48px;
+  top: -16px;
+  text-shadow: 0 0 1px black;
+}
+
+
+.leaflet-popup-content {
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}
+
+.search-input {
+  max-width: 230px !important;
+}
+
+.search-tip {
+  max-width: 300px !important;
+  direction: rtl;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+</style>
+
+<div id="map"></div>
+<div id="controls" class="controls"></div>
+
+<script>
+
+let maps = {
+  'sw': {
+    "size": 200000,
+    "center": [0,0],
+    "tiles": 'tiles/{z}/{x}/{y}.png',
+    "maxZoom": 4,
+  },
+}
+
+let map = null;
+
+let localDataName = 'joricsSupraworld';
+let localData = JSON.parse(localStorage.getItem(localDataName)) || {};
+let settings = null;
+let searchControl = null;
+let mapParam = {};
+
+let types = {};
+let icons = {};
+
+function saveSettings() {
+  localStorage.setItem(localDataName, JSON.stringify(localData));
+}
+
+const capitalize = s => s[0].toUpperCase()+s.slice(1);
+
+function getIconHTML(options, size=48) {
+  options = options || {class:'fa fa-circle-question', bg:'dimgrey'};
+  let bg = options.bg || 'dimgrey';
+  let fg = options.fg || 'white';
+  let html = options.html || `<i class="${options.class}" style="color:${fg}"></i>`;
+  return `<span class="icon-base icon-${size}" style="color:${bg}">${html}</span>`;
+}
+
+let baseIcon = (options) => {
+  let size = 48;
+  return L.divIcon({
+    className: 'divIcon',
+    html: getIconHTML(options, size),
+    iconSize:     [size, size], // size of the icon
+    iconAnchor:   [size/2, size], // point of the icon which will correspond to marker's location
+    popupAnchor:  [0, -size*1.1], // point from which the popup should open relative to the iconAnchor
+  });
+};
+
+function getType(feature) {
+  for (const[k,v] of Object.entries(types)) {
+    if (!v['match']) continue;
+    let regex = v['match'];
+    if (feature.properties.path.match(new RegExp(regex, "i"))) return k;
+  }
+  return 'misc';
+}
+
+function getProp(feature) {
+  return types[getType(feature)] || {icon:'misc', group:'misc'};
+}
+
+const getIcon = f => getProp(f).icon;
+const getGroup = f =>getProp(f).group;
+
+const formatZ = z => z>0 ? `&UpArrow;${z}`: `&DownArrow;${-z}`;
+const formatCoords = c => `${c[0]}, ${-c[2]}, ${c[1]}`;
+const clampCoords = c => c.map(v=>v.toFixed(2));
+const customMarker = (latlng, feature) => L.marker(latlng, {feature: feature, id: feature.properties.path, icon: baseIcon(icons[getIcon(feature)])});
+const tooltipCallback = marker => `<b>${marker.options.feature.properties.name}</b><br/>${formatZ(marker.options.feature.geometry.coordinates[1])}`
+const formatPath = s => s.split('/').map((part, i) => '-'.repeat(i) +'- '+ part).join('<br/>\n');
+
+const popupCallback = marker => `<p><b>${marker.options.feature.properties.name}</b>`
+  + `<br/>${getType(marker.options.feature)}`
+  + `<br/><small>Type: ${marker.options.feature.properties.type}</small>`
+  + `<br/><small>Position: ${formatCoords(marker.options.feature.geometry.coordinates)}</small>`
+  + `<br/><small>Path: ${marker.options.feature.properties.path}</small>`
+  + `<br/><small>Components: ${marker.options.feature.properties.comp}</small>`
+  + `<p><input type=checkbox id="${marker.options.id}" onclick=toggleFound("${marker.options.id}")${settings.markedItems[marker.options.id]==true?' checked':''}>`
+  + `<label for="${marker.options.id}">Found</label>`;
+
+function loadMarkersRecursive(items, area, layers, prefix='', level = 0) {
+  if (!items) return;
+  for (o of items) {
+    let path = prefix + (prefix ? '/' : '') + o['name'];
+    let p = o['position'];
+    if (p && p.length==3 && p.every(x=>x!=0)) {
+      let c = clampCoords(p);
+      let comp = (o['components']||[]).join(':');
+      let feature = {'type': 'Feature', 'geometry': {'type': 'Point', 'coordinates': c}, 'properties': {'name': o['name'], 'type': o['type'], 'area': area, 'path': path, 'comp':comp}};
+      let group = getGroup(feature);
+      let layer = layers[group];
+      if (!layer) continue;
+      let marker = customMarker([-c[2], c[0]], feature, area).bindTooltip(tooltipCallback).bindPopup(popupCallback).addTo(layer);
+    }
+    loadMarkersRecursive(o['children'], area, layers, path, level + 1);
+  }
+}
+
+function loadMarkers(data, mapId) {
+
+  for (id in maps) {
+    localData[id] = localData[id] || {};
+    localData[id].markedItems = localData[id].markedItems || {};
+    localData[id].activeLayers = localData[id].activeLayers || {'collectibles':true};
+  }
+
+
+  localData.mapId = mapId;
+  settings = localData[mapId];
+  saveSettings();
+
+  if (map) map.remove();
+
+  let config = maps[mapId];
+
+  /*
+  //let d = 32768;
+
+  let d = 65536;
+
+  let m = {
+    size: d,
+    bounds: [[-d/2,-d/2], [d/2,d/2]],
+    center: [0, 0],
+    flip_y: false,
+  }
+
+  let tileSize = 512; // this is essentially map size in tiles on zoom level 0
+  let size = tileSize*tileSize; // default map width in pixels is tileSize squared
+
+  // custom map weighted (scaled) dimensions (usually 0..1)
+  let [sw,sh] = [m.size, m.size].map(e => e / size);
+  let [sx,sy] = m.center.map(e => e / size);
+
+  // calculate factor and offset for the custom map
+  let factor = 1 / tileSize / sw;
+  let dx = (.5 - sx / sw) * tileSize;
+  let dy = (.5 - sy / sh) * tileSize;
+
+  // correct bounds (still need to flip x and y for leaflet)
+  let [w,h] = [m.size, m.size];
+  let [x,y] = m.center;
+
+  let [[left,top],[right,bottom]] = m.bounds;
+  let bounds = [[top, left], [bottom, right]];
+  let center = [(m.flip_y ? -1 : 1) * y, x];
+
+
+  // crs.transformation represents an affine transformation:
+  let crs = L.CRS.Simple;
+  // a set of coefficients a, b, c, d for transforming a point of a form (x,y) into (a*x + b, c*y + d)
+  crs.transformation = new L.Transformation(factor, dx, (m.flip_y ? -1 : 1) *  factor, dy); // Invert the y-axis
+
+*/
+
+  var games = {
+    'sw': {
+        'path': 'E:/Games/Supraworld/Supraworld/Supraworld/Content/Paks',
+        'mappings': 'supraworld.usmap',
+        'prefix': 'Supraworld/Plugins/GameFeatures/Supraworld/Supraworld/Content/Maps/',
+        'maps': [
+            'Supraworld'
+        ],
+        'images': [
+            'Supraworld/Plugins/Supra/PlayerMap/Content/Textures/T_SupraworldMapV2Q0',
+            'Supraworld/Plugins/Supra/PlayerMap/Content/Textures/T_SupraworldMapV2Q1',
+            'Supraworld/Plugins/Supra/PlayerMap/Content/Textures/T_SupraworldMapV2Q2',
+            'Supraworld/Plugins/Supra/PlayerMap/Content/Textures/T_SupraworldMapV2Q3',
+        ],
+    },
+  }
+
+  var p = {
+      "MapWorldCenter": {
+        "X": -16500.0,
+        "Y": -16500.0,
+        "Z": 48000.0
+      },
+      "MapWorldSize": 200000.0,
+      "MapWorldUpperLeft": {
+        "X": -116500.0,
+        "Y": -116500.0,
+        "Z": 10000.0
+      },
+      "MapWorldLowerRight": {
+        "X": 83500.0,
+        "Y": 83500.0,
+        "Z": 10000.0
+      },
+  }
+
+  var mapSize = {width: 8192, height: 8192}
+  var tileSize   = {x: 512, y: 512};
+  var tileMaxSet = 4;
+  var mapMinResolution = Math.pow(2, tileMaxSet);
+
+  // fixes 404 errors
+  p.MapWorldUpperLeft.X  += 1;
+  p.MapWorldUpperLeft.Y += 1;
+  p.MapWorldLowerRight.X -= 1;
+  p.MapWorldLowerRight.Y -= 1;
+
+  let mapBounds = [
+    [ p.MapWorldUpperLeft.Y, p.MapWorldUpperLeft.X ],
+    [ p.MapWorldLowerRight.Y, p.MapWorldLowerRight.X ]
+  ];
+
+  let gap = p.MapWorldSize/2;
+  let mapBoundsWithGap = [
+    [ p.MapWorldUpperLeft.Y - gap, p.MapWorldUpperLeft.X - gap ],
+    [ p.MapWorldLowerRight.Y + gap, p.MapWorldLowerRight.X + gap ]
+  ];
+
+  var m = p.MapWorldSize / mapSize.width;
+  var mapScale   = {x: 1.0/m, y: 1.0/m};
+  var mapOrigin  = {x: -p.MapWorldUpperLeft.X * mapScale.x, y: -p.MapWorldUpperLeft.Y * mapScale.y};
+
+  // Create a coordinate system for the map
+  var crs = L.CRS.Simple;
+  crs.transformation = new L.Transformation(mapScale.x, mapOrigin.x, mapScale.y, mapOrigin.y);
+  crs.scale = function (zoom) { return Math.pow(2, zoom) / mapMinResolution; };
+  crs.zoom = function (scale) { return Math.log(scale * mapMinResolution) / Math.LN2; };
+
+  mapCenter = [p.MapWorldCenter.Y, p.MapWorldCenter.X];
+
+/*
+  map = L.map('map', {
+    crs: crs,
+    maxZoom: 19,
+    zoom: 1, // mandatory, need to set zoom and center first (c)
+
+//      center: [0,0],
+    center: mapCenter, // mandatory
+
+    //maxBounds: L.latLngBounds(bounds).pad(0.5), // elastic-y bounds, nice to have
+
+//    maxBounds: mapBoundsWithGap, // elastic-y bounds
+
+    zoomControl: false,
+  });
+*/
+
+  //Create the map
+  map = new L.Map('map', {
+    crs: crs,
+    fadeAnimation: false,
+    maxBounds: mapBoundsWithGap, // elastic-y bounds
+    zoomControl: false,
+
+    maxZoom: 19,
+    zoom: 0,
+
+    center: [0,0],
+  });
+
+
+  //map.fitBounds(mapBounds);
+
+
+  if (mapParam.lat && mapParam.lng && mapParam.zoom) {
+    map.setView([mapParam.lat, mapParam.lng], mapParam.zoom);
+    mapParam = {};
+  } else if (settings.center && settings.zoom) {
+    map.setView(settings.center, settings.zoom, { animate: false });
+  }
+
+  map.addControl(L.control.zoom({ position: 'bottomright' }));
+
+  try {
+  L.control.mousePosition({wrapLng: false, lngFirst: true, lngFormatter:lng=>Math.round(lng), latFormatter:lat=>Math.round(lat)}).addTo(map);
+  } catch(e) {
+    console.log(e);
+  }
+
+  let baseLayers = {};
+
+
+  layerOptions = {
+      tileSize: L.point(tileSize.x, tileSize.y),
+      noWrap: true,
+      tms: false,
+      updateInterval: -1,
+      keepBuffer: 16,
+      maxNativeZoom: 4,
+      nativeZooms: [0, 1, 2, 3, 4],
+      bounds: mapBounds,
+      attribution: '<a href="https://github.com/joric/supraworld" target="_blank">GitHub</a>',
+  };
+
+
+  let baseLayer = L.tileLayer.canvas('tiles/{z}/{x}/{y}.png', layerOptions).addTo(map);
+
+/*
+  for (const [id,config] of Object.entries(maps)) {
+    let tilesLayer = L.tileLayer.canvas(config.tiles, {
+      tileSize: tileSize,
+      maxNativeZoom: config.maxZoom,
+      //maxZoom: config.zoomlevels,
+      maxZoom: 19,
+      edgeBufferTiles: 2,
+
+      bounds: mapBounds, // mandatory to avoid 404 errors
+
+      attribution: '<a href="https://github.com/joric/supraworld/" target=_blank>Joric&apos;s Maps</a>',
+    })
+
+    baseLayers[id] = tilesLayer;
+    if (id==mapId) {
+      tilesLayer.addTo(map);
+    }
+  }
+*/
+
+  const globalClusterGroup = L.markerClusterGroup({
+    chunkedLoading: true,
+    //disableClusteringAtZoom: config.zoomlevels,
+    showCoverageOnHover: false,
+    spiderfyOnMaxZoom: true,
+    removeOutsideVisibleBounds: true,
+    //zoomToBoundsOnClick: false,
+    maxClusterRadius: 80,
+    //animateAddingMarkers: false,
+    //animate: false,
+  });
+
+  map.addLayer(globalClusterGroup);
+
+  globalClusterGroup.on('clustermouseover', function(a) {
+    if (a.layer && ( a.layer._childCount < 10)) a.layer.spiderfy();
+  });
+
+
+  let groups = [...new Set( Object.values(types).map(x => x.group||'misc'))];
+
+  let layers = {};
+  for (const group of groups) {
+    layers[group] = L.featureGroup.subGroup(globalClusterGroup);
+  }
+
+  //loadMarkersRecursive(data.items, mapId, layers);
+/*
+  let outers = {};
+  let areas = {};
+
+  for (const o of data) {
+    let outer = o.Outer + '.' + o.Name;
+    outers[outer] = o;
+    if ((p = o.Properties) && (a = p.WorldAsset) && (n = a.AssetPathName) && (t = p.LevelTransform)) {
+      let key = n.split('.').pop();
+      //let m = new THREE.Matrix4().compose(getVec(t.Translation, 0), getQuat(t.Rotation), new THREE.Vector3(1,1,1));
+      areas[key] = true;
+    }
+  }
+
+  console.log(areas);
+*/
+
+  function getMatrix(o, matrix) {
+    matrix = matrix || new THREE.Matrix4();
+    if (p = o.Properties) {
+      if (p.RelativeLocation) {
+        //console.log(o, p.RelativeLocation);
+        matrix.premultiply(locRotScale(getVec(p.RelativeLocation), getRot(p.RelativeRotation), getVec(p.RelativeScale3D, 1)));
+      }
+      for (parent of ['RootObject', 'RootComponent', 'DefaultSceneRoot', 'AttachParent']) {
+        if ((node = p[parent]) && (s = node.ObjectName)) {
+          let d = s.split("'")[1].split(':')[1].split('.')
+          let key = d[1] + '.' + d[2];
+          if (t = outers[key]) {
+            return getMatrix(t, matrix);
+          }
+        }
+      }
+    }
+    return matrix;
+  }
+
+  function getLocation(o) {
+    let matrix = getMatrix(o);
+    (m = areas[area]) && matrix.premultiply(m);
+    return new THREE.Vector3().setFromMatrixPosition(matrix);
+  }
+
+  function getDirection(o) {
+    let matrix = getMatrix(o);
+    (m = areas[area]) && matrix.premultiply(m);
+    return new THREE.Vector3().setFromMatrixColumn(matrix,2).normalize();
+  }
+
+  function locRotScale(loc, rot, scale) {
+    let t = new THREE.Matrix4().makeTranslation(loc.x, loc.y, loc.z);
+    let r = makeRotationFromEuler(rot);
+    let s = new THREE.Matrix4().makeScale(scale.x, scale.y, scale.z);
+    return new THREE.Matrix4().multiply(t).multiply(r).multiply(s);
+  }
+
+  function toRad(x) { return THREE.Math.degToRad(x); }
+  function getVec(v,t) { return v ? new THREE.Vector3(v.X, v.Y, v.Z) : new THREE.Vector3(t,t,t); }
+  function getRot(v) { return v ? new THREE.Vector3(toRad(v.Roll), toRad(v.Pitch), toRad(v.Yaw) ) : new THREE.Vector3() }
+  function getQuat(v) { return v ? new THREE.Quaternion(v.X, v.Y, v.Z, v.W) : new THREE.Quaternion(); }
+
+  function makeRotationFromEuler(r) {
+    let matrix = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(-r.x, -r.y, -r.z));
+    let m = matrix.elements; // negate angles, flip rows/columns to match mathutils
+    matrix.set(m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], m[8], m[9], m[10], m[11], m[12], m[13], m[14], m[15]);
+    return matrix;
+  }
+
+  let area = 'Supraland';
+
+  let areas = {};
+  let outers = {};
+
+  for (const o of data) {
+    let outer = o.Outer + '.' + o.Name;
+    outers[outer] = o;
+    if ((p = o.Properties) && (a = p.WorldAsset) && (n = a.AssetPathName) && (t = p.LevelTransform)) {
+      let key = n.split('.').pop();
+      let m = new THREE.Matrix4().compose(getVec(t.Translation, 0), getQuat(t.Rotation), new THREE.Vector3(1,1,1));
+      areas[key] = m
+    }
+  }
+
+  //console.log(areas);
+  //console.log(outers);
+
+  let mx=-100000000;
+  let my=-100000000;
+
+  let lx=100000000;
+  let ly=100000000;
+
+  let markers = [];
+
+  const tooltipCallback = marker => `<b>${marker.options.feature.properties.name}</b><br/>${marker.options.feature.properties.type} ${marker.options.feature.properties.spawns||''}<br/>${formatZ(marker.options.feature.geometry.coordinates[1])}`
+
+  for (const o of data) {
+    //if (!types[o.Type]) continue;
+    if (!o.Type.endsWith('_C')) continue;
+    //if (!o.Type.includes('Coin')) continue;
+
+    let c = getLocation(o, area);
+
+    //console.log(o.Type, c);
+    mx = Math.max(c.x, mx);
+    my = Math.max(c.y, my);
+
+    lx = Math.min(c.x, lx);
+    ly = Math.min(c.y, ly);
+
+    let latlng = [c.y, c.x];
+
+    let feature = {'type': 'Feature', 'geometry': {'type': 'Point', 'coordinates': [c.x, c.y, c.z]}, 'properties': {'name': o.Name, 'type': o.Type}};
+
+    let id = o.Name;
+
+    if (o.Properties && o.Properties['Pickup Class']) {
+      feature.properties.spawns =  o.Properties['Pickup Class']['ObjectName'];
+      id += ' ' + feature.properties.spawns;
+      //console.log(feature.properties.spawns);
+    }
+
+    let marker = L.marker(latlng, {feature: feature, id: id}).bindTooltip(tooltipCallback);
+
+    markers.push(marker);
+  }
+
+  //markers.addTo(globalClusterGroup);
+
+  globalClusterGroup.addLayers(markers);
+
+  //console.log(lx, ly, mx,my);
+
+
+  searchControl = new L.Control.Search({
+    propertyName: 'id',
+    //layer: L.featureGroup(Object.values(layers)),
+    layer: globalClusterGroup,
+    hideMarkerOnCollapse: true,
+    initial: false,
+    position: 'topleft',
+    /*
+    filterData: (text, records) => Object.fromEntries(
+      Object.entries(records).filter(([_,r])=>map.hasLayer(r.layer._eventParents?.[Object.keys(r.layer._eventParents)[0]])&&(r.layer.options.id||'').toLowerCase().includes(text.toLowerCase())
+    )),
+    */
+  })
+
+  map.addControl(searchControl);
+
+  L.control.fullscreen({ position: 'bottomright', forceSeparateButton: true}).addTo(map);
+
+  let layercontrol = L.control.layers(baseLayers, layers, {collapsed: true, position: 'topright'}).addTo(map);
+
+  for (let id in layers) {
+    if (!(settings.activeLayers[id])) {
+      map.removeLayer(layers[id]);
+    }
+  }
+
+  map.on('baselayerchange', function(e) {
+    loadMap(e.name);
+    saveSettings();
+  });
+
+  map.on('overlayadd', function(e) {
+    settings.activeLayers[e.name] = true;
+    markItems();
+    saveSettings();
+  });
+
+  map.on('overlayremove', function(e) {
+    delete settings.activeLayers[e.name];
+    markItems();
+    saveSettings();
+  });
+
+  map.on('moveend zoomend', function(e) {
+    settings.center = [map.getCenter().lat, map.getCenter().lng]; // avoid circular refs here
+    settings.zoom = map.getZoom();
+    saveSettings();
+  });
+
+  // add toolbar (see https://github.com/Leaflet/Leaflet.toolbar/issues/63)
+  let ImmediateAction = L.Toolbar2.Action.extend({
+    initialize: function(map, myAction) {
+      L.Toolbar2.Action.prototype.initialize.call(this);
+      this.disableTime = Date.now();
+      map.on('click', () => {
+        this.disable();
+      });
+    },
+    enable: function(e) {
+      if (e) L.DomEvent.preventDefault(e);
+      if (Date.now() - this.disableTime > 100) {
+        L.Toolbar2.Action.prototype.enable.call(this);
+      }
+    },
+    disable: function() {
+      if (this._enabled) {
+        this.disableTime = Date.now();
+      }
+      L.Toolbar2.Action.prototype.disable.call(this);
+    }
+  });
+
+  let ImmediateSubAction = L.Toolbar2.Action.extend({
+    initialize: function(map, myAction) {
+      this.map = map;
+      this.myAction = myAction;
+      L.Toolbar2.Action.prototype.initialize.call(this);
+    },
+    addHooks: function() {
+      this.myAction.disable();
+    }
+  });
+
+  let cancelAction = ImmediateSubAction.extend({
+      options: {
+          toolbarIcon: {
+              html: '&times;',
+              tooltip: 'Cancel'
+          }
+      }
+  });
+
+  function action(tooltip, icon, actions) {
+    return ImmediateAction.extend({
+      options: {
+        toolbarIcon: {
+          html: icon,
+          tooltip: tooltip,
+        },
+        subToolbar: new L.Toolbar2({
+          actions: [...actions, cancelAction],
+        })
+      }
+    });
+  }
+
+  function subAction(html, callback, tooltip) {
+    return ImmediateSubAction.extend({
+      options: {
+        toolbarIcon: {
+          html: html,
+          tooltip: tooltip||html,
+        }
+      },
+      addHooks: function () {
+        if (typeof callback === 'function') {
+          callback();
+        }
+        ImmediateSubAction.prototype.addHooks.call(this);
+      }
+    });
+  }
+
+  new L.Toolbar2.Control({
+    position: 'bottomleft',
+    actions: [
+      action('Share', '&#x1F517;',[
+        subAction('Copy Map View URL', ()=>copyToClipboard(getViewURL())),
+      ]),
+      action('Local Data', '&#x1F4C1;',[
+        subAction('Load Settings', loadLocalData),
+        subAction('Save Settings', saveLocalData),
+        subAction('Reset Settings', resetLocalData),
+      ]),
+    ],
+  }).addTo(map);
+
+}
+
+function getViewURL() {
+  let base = window.location.href.replace(/#.*$/,'');
+  let p = map.getCenter();
+  let vars = {mapId:localData.mapId, lat:Math.round(p.lat), lng:Math.round(p.lng), zoom:map.getZoom()};
+  return base +'#' + Object.entries(vars).map(e=>e[0]+'='+encodeURIComponent(e[1])).join('&');
+}
+
+function copyToClipboard(text) {
+  let input = document.body.appendChild(document.createElement("input"));
+  input.value = text;
+  input.focus();
+  input.select();
+  document.execCommand('copy');
+  input.parentNode.removeChild(input);
+}
+
+function toggleFound(id) {
+  if (settings.markedItems[id]==true) {
+    delete settings.markedItems[id];
+  } else {
+    settings.markedItems[id]=true;
+  }
+  saveSettings();
+  markItems();
+}
+
+function markItems() {
+/*
+  function walk(layer) {
+    if (layer instanceof L.Marker) {
+      const found = settings.markedItems[layer.options.id] === true;
+      layer._icon?.classList[found ? 'add' : 'remove']('found');
+    } else if (layer instanceof L.LayerGroup) {
+      layer.eachLayer(walk);
+    }
+  }
+  map.eachLayer(walk);
+*/
+}
+
+function loadMap(mapId) {
+  // markers are exported using FModel
+  // from Supraworld/Plugins/GameFeatures/Supraworld/Supraworld/Content/Maps/Supraworld.umap
+  /*
+  fetch(`data/Supraworld.json`).then(r=>r.json()).then(data=>{
+    loadMarkers(data, mapId);
+    markItems();
+  })
+  */
+
+  loadGzip('data/Supraworld.json.gz');
+
+
+  document.querySelectorAll('.btn').forEach(e=>e.id==mapId ? e.classList.add('selected') : e.classList.remove('selected'));
+}
+
+function loadLocalData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.hidden = true;
+  input.onchange = function(e) {
+    var file = input.files[0];
+    if (file) {
+      var reader = new FileReader();
+      reader.readAsText(file, "UTF-8");
+      reader.onload = function (evt) {
+        let data = evt.target.result;
+        evt.target.value = null;
+        try {
+          localData = JSON.parse(data);
+          saveSettings();
+          location.reload();
+        } catch(e) {
+          console.log(e);
+        }
+      }
+      reader.onerror = function (evt) {
+        alert('error reading file');
+      }
+    }
+  }
+  input.value = null;
+  input.accept = '.json';
+  input.click();
+}
+
+function saveLocalData() {
+  let data = localStorage.getItem(localDataName);
+  if (window.showSaveFilePicker) {
+    window.showSaveFilePicker({suggestedName: localDataName+'.json'}).then(f=>f.createWritable()).then(f=>f.write(data).then(()=>f.close())).catch(e=>{});
+  } else {
+    let filename = localDataName+'.json';
+    let blob = new Blob([data], {type: "text/json"});
+    if(navigator.msSaveOrOpenBlob) {
+        navigator.msSaveOrOpenBlob(blob, filename);
+    } else {
+        var a = document.body.appendChild(document.createElement("a"));
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+        a.remove();
+    }
+  }
+}
+
+function resetLocalData() {
+  if (confirm('Are you sure you want to reset settings?')) {
+    localStorage.removeItem(localDataName);
+    location.reload();
+  }
+}
+
+function loadGzip(url) {
+
+  console.time('loading gzip');
+
+  // Check if DecompressionStream is supported
+  if ('DecompressionStream' in window) {
+    // Fetch the gzipped file
+    fetch(url)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.arrayBuffer(); // Convert the response to an ArrayBuffer
+      })
+      .then(arrayBuffer => {
+
+        var buffer = new Uint8Array(arrayBuffer);
+        // Create a new DecompressionStream
+        const decompressionStream = new DecompressionStream('gzip');
+        // Create a new ReadableStream from the ArrayBuffer
+        const readableStream = new ReadableStream({
+          start(controller) {
+            controller.enqueue(arrayBuffer);
+            controller.close();
+          }
+        });
+        // Pipe the readable stream through the decompression stream
+        const decompressedStream = readableStream.pipeThrough(decompressionStream);
+        // Read the decompressed stream and log the content to the console
+        const reader = decompressedStream.getReader();
+        let text = '';
+        return reader.read().then(function processText({ done, value }) {
+          if (done) {
+            console.timeEnd('loading gzip');
+            //callback(text);
+            loadMarkers(JSON.parse(text), 'sw');
+            markItems();
+            return;
+          }
+          text += new TextDecoder().decode(value, { stream: true });
+          return reader.read().then(processText);
+        });
+      })
+      .catch(error => {
+        console.error('There has been a problem with your fetch operation:', error);
+        // check if zip is made with 'Deflate' method, not LZMA
+      });
+  } else {
+    console.error('DecompressionStream is not supported in this browser.');
+  }
+}
+
+
+window.onload = function() {
+
+  if (location.hash.length>1) {
+    for (const s of location.hash.slice(1).split('&')) {
+      let [k,v] = s.split('=');
+      mapParam[k] = v;
+    }
+    // clear location hash
+    history.pushState('', document.title, window.location.pathname + window.location.search);
+  }
+
+  window.addEventListener("keydown", function (e) {
+    if (e.target.id.startsWith('searchtext')) {
+      return;
+    }
+    switch (e.code) {
+      case 'KeyF':
+        if (e.ctrlKey) {
+          searchControl.expand();
+          e.preventDefault();
+        } else {
+          map.toggleFullscreen();
+        }
+        break;
+      case 'Digit1': loadMap(Object.keys(maps)[0]); break;
+      case 'Digit2': loadMap(Object.keys(maps)[1]); break;
+      case 'Digit3': loadMap(Object.keys(maps)[2]); break;
+    }
+  });
+
+  localData.mapId = mapParam.mapId || localData.mapId || Object.keys(maps)[0];
+
+  let promises = [
+    'data/types.json',
+    'data/icons.json',
+  ].map(url=>fetch(url).then(r=>r.json()));
+
+  Promise.all(promises).then(data => {
+    [types, icons] = data;
+    loadMap(localData.mapId);
+  });
+
+}
+
+</script>

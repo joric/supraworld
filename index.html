@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Joric's Supraworld - Maptalks</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm306.7 69.1L162.4 380.6c-19.4 7.5-38.5-11.6-31-31l55.5-144.3c3.3-8.5 9.9-15.1 18.4-18.4l144.3-55.5c19.4-7.5 38.5 11.6 31 31L325.1 306.7c-3.2 8.5-9.9 15.1-18.4 18.4zM288 256a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z'/%3E%3C/svg%3E" />
+
+<meta property="og:image" content="https://repository-images.githubusercontent.com/1038911862/442f6417-59cd-4580-89ec-4cf6084b62b7" />
+<meta property="og:site_name" content="Joric" />
+<meta property="og:type" content="object" />
+<meta property="og:title" content="Joric's Supraworld" />
+<meta property="og:description" content="Supraworld Interactive Map" />
+
+<link rel="stylesheet" href="css/main.css" />
+
+<template id="remote">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/js/all.min.js"></script>
+  <link  href="https://cdn.jsdelivr.net/npm/maptalks-gl@0.111.0/dist/maptalks-gl.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/maptalks-gl@0.111.0/dist/maptalks-gl.min.js"></script>
+  <link href="https://joric.github.io/maps/src/controls/search-control/search-control.css" rel="stylesheet">
+  <script src="https://joric.github.io/maps/src/controls/search-control/search-control.js"></script>
+  <link href="https://joric.github.io/maps/src/controls/markers-control/markers-control.css" rel="stylesheet">
+  <script src="https://joric.github.io/maps/src/controls/markers-control/markers-control.js"></script>
+</template>
+
+<template id="local">
+  <script src="../../lib/font-awesome/js/all.min.js"></script>
+  <link href="../../lib/maptalks-gl/maptalks-gl.css" rel="stylesheet">
+  <script src="../../lib/maptalks-gl/maptalks-gl.js"></script>
+  <link href="../../src/controls/search-control/search-control.css" rel="stylesheet">
+  <script src="../../src/controls/search-control/search-control.js"></script>
+  <link href="../../src/controls/markers-control/markers-control.css" rel="stylesheet">
+  <script src="../../src/controls/markers-control/markers-control.js"></script>
+</template>
+
+<template id="popup-template">
+  <div id="popup" class="popup">
+    <div class="popup-content-wrapper">
+      <div class="popup-content">
+        <div id="popup-title">Popup Title</div>
+        <div id="popup-subtitle">Popup Subtitle</div>
+        <div id="popup-note">Popup Note</div>
+        <div id="popup-subnote" class="collapsed">Popup Subnote</div>
+        <div id="popup-data" class="collapsed"></div>
+        <div id="popup-data-toggle" data-toggle="collapse" data-target="popup-data"><hr/></div>
+        <div class="popup-controls">
+          <input id="popup-found" type="checkbox">
+          <label id="popup-found-label" for="popup-found" title="Toggle found">Found</label>
+          <a class="popup-link" id="popup-wiki-link" href="#" target="_blank" title="Fallout London Wiki"><i class="fa fa-brands fa-wikipedia-w"></i></a>
+          <a class="popup-link" id="popup-map-link" href="#" target="_blank" title="Copy Map Link to Clipboard"><i class="fa fa-link"></i></a>
+          <a class="popup-link" id="popup-form-id-link" href="#" target="_blank" title="Copy Marker SID to Clipboard"><i class="fa fa-hashtag"></i></a>
+          <a class="popup-link" id="popup-marker-id-link" href="#" target="_blank" title="Copy Marker Location to Clipboard"><i class="fa fa-location-crosshairs"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="popup-tip-container"><div class="popup-tip"></div></div>
+    <a id="popup-close" class="popup-close-button">&times;</a>
+  </div>
+</template>
+
+<script>
+document.head.appendChild(document.getElementById(location.protocol === 'file:' ? 'local' : 'remote').content.cloneNode(true));
+</script>
+
+<script src="js/three-onlymath.min.js"></script>
+<script src="js/FModelReader.js"></script>
+
+</head>
+<body>
+
+<div tabindex=0 id="map"></div>
+<div class="controls-topleft">
+
+  <div class="options-control" tabindex=0>
+    <button type="button" class="options-control-button" title="Menu"><span class="options-control-icon"><i class="fa fa-bars"></i></span></button>
+    <div class="options-control-items">
+      <input id="file" type='file' hidden/>
+      <input id="game_file" type='file' hidden/>
+      <div id="save_data" class="options-control-item"><i class="fa fa-download"></i> Download Settings</div>
+      <div id="load_data" class="options-control-item"><i class="fa fa-upload"></i> Upload Settings</div>
+      <div id="reset_data" class="options-control-item"><i class="fa fa-xmark"></i> Reset Settings</div>
+      <div id="copy_path" class="options-control-item" title="Paste it in Import dialog and press Enter to change folder"><i class="fa fa-copy"></i> Copy Save Path</div>
+      <div id="import_save" class="options-control-item" title="Import Game Save file to mark items automatically"><i class="fa fa-floppy-disk"></i> Import Save File</div>
+    </div>
+  </div>
+
+</div>
+
+
+<a href="https://github.com/joric/supraworld/wiki/" target="_blank" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+<div class="version"></div>
+
+<div id="alert" class="closed" tabindex="-1">Copied To Clipboard</div>
+
+<script>
+
+let gameTitle = 'Supraworld';
+let dataPrefix = location.protocol === 'file:' ? '../supraland/' : 'https://joric.github.io/supraland/';
+
+let iconImages = {};
+let iconSize = 48;
+let markedOpacity = 0.33;
+
+let maps = {
+  sw:  { 
+    title: 'Supraworld',
+    bounds: {left: -116500.0, top: -116500.0, right: 83500.0, bottom: 83500.0},
+    center: {left: -16500.0, top: -16500.0, alt:48000},
+    tiles: 'tiles/{z}/{x}/{y}.jpg',
+    data: 'data/Supraworld.json.gz',
+    tileSize: 512,
+    maxZoom: 4,
+    versions: {
+      '7386': { date: '2025-08-15', tiles: 'tiles/sw/V2/{z}/{x}/{y}.jpg', data: 'data/Supraworld.7386.json.gz'},
+      '7448': { date: '2025-08-18', tiles: 'tiles/sw/V2/{z}/{x}/{y}.jpg', data: 'data/Supraworld.7448.json.gz'},
+      '7708': { date: '2025-08-30', tiles: 'tiles/sw/V2/{z}/{x}/{y}.jpg', data: 'data/Supraworld.7708.json.gz'},
+      '7876': { date: '2025-09-06', tiles: 'tiles/sw/V4/{z}/{x}/{y}.jpg', data: 'data/Supraworld.7876.json.gz'},
+    },
+   },
+
+  sl:  { 
+    title: 'Supraland',
+    bounds: {left: -74500, top: -89500, right: 100500, bottom: 85500},
+    center: {left: 13000, top: -2000},
+    tiles: 'tiles/sl/base/{z}/{x}/{y}.jpg',
+    tileSize: 512,
+    maxZoom: 4,
+   },
+
+  slc: {
+    title: 'Supraland Crash',
+    bounds: {left: -19065, top: -45040, right: 71047, bottom: 45072},
+    center: {left: 25991, top: -16},
+    tiles: 'tiles/slc/base/{z}/{x}/{y}.jpg',
+    tileSize: 512,
+    maxZoom: 4,
+  },
+
+  siu: {
+    title: 'Supraland Six Inches Under',
+    bounds: {left: -73728, top: -92728, right: 73728, bottom: 54728},
+    center: {left: 0, top: -19000},
+    tiles: 'tiles/siu/base/{z}/{x}/{y}.jpg',
+    tileSize: 512,
+    maxZoom: 4,
+  }
+};
+
+let localDataName = 'joricsSupra';
+let localData = JSON.parse(localStorage.getItem(localDataName)) || {};
+let settings = null;
+
+let map;
+let defaultPitch = 30;
+let typeData = null;
+let iconData = null;
+
+let mapParam = {};
+
+function capitalize(s) {
+  return s[0].toUpperCase()+s.slice(1);
+}
+
+function splitCamelCase(s) {
+  return s.split(/(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z&&[^s]])/);
+}
+
+function translate(s) {
+  return splitCamelCase(s.replace('_C','')).map(capitalize).join(' ');
+}
+
+function setClass(e, set, c) { set ? e.classList.add(c) : e.classList.remove(c);}
+function toggleClass(e, c) { if (e.classList.contains(c)) { e.classList.remove(c); return false; } else { e.classList.add(c); return true; }}
+function toggleNav(e) { let input = document.querySelector('#search-input'); toggleClass(e.parentElement, 'closed') ? input.blur() : input.focus();}
+function toggleVisibility(a) { [].forEach.call(a, function(e) { toggleClass(document.querySelector(e), 'collapsed'); }) }
+
+function getType(feature) {
+  let type = feature.properties.type;
+  let prop = typeData[type];
+/*
+  if (prop && prop.material && feature.properties.material) {
+    newType = prop.material[feature.properties.material];
+    if (newType && typeData[newType]) {
+      prop = typeData[newType];
+      type = newType;
+    }
+  }
+*/
+  let newType = prop && (prop.material?.[feature.properties.material] || prop.color?.[feature.properties.color] || prop.name?.[feature.properties.name]);
+
+  if (typeData[newType]) {
+    prop = typeData[newType];
+    type = newType;
+  }
+
+  return {...prop || {icon:'misc', group:'misc'}, type: type, title: (prop||{}).title || translate(feature.properties.type)};
+}
+
+const getIcon = f => getType(f).icon;
+const getGroup = f =>getType(f).group;
+
+let mouseMoved = false;
+document.addEventListener('mousedown', function(event) {mouseMoved = false; });
+document.addEventListener('mousemove', function(event){mouseMoved = true;});
+
+function addMarker(feature, options) {
+  let t = getType(feature);
+
+  //if (t.group=='misc' || t.group=='actors') return;
+
+  let [x,y,z] = feature.geometry.coordinates;
+
+  z /= 4;
+
+  //console.log(feature.geometry.coordinates);
+
+  let getSymbol = function(feature,opacity=1) {
+    return {
+      //markerFile   : 'js/lib/maptalks-gl/images/1.png',
+      markerFile   : iconImages[t.icon] || iconImages['misc'],
+      markerWidth  : iconSize,
+      markerHeight : iconSize,
+      markerDx     : 0,
+      markerDy     : 0,//-Math.round(iconSize/2),
+      markerOpacity: opacity,
+      //markerVerticalAlignment: 'middle',
+    };
+  };
+
+  let [layers,counters,icons] = [options.layers, options.counters, options.icons];
+
+  let opacity = settings.markedItems[getBaseName(feature.properties.name)] ? markedOpacity : 1;
+
+  let line = new maptalks.LineString([[x,y,0],[x,y,z]], { symbol: { lineOpacity: opacity} });
+  layers.lines = layers.lines||[];
+  layers.lines.push(line);
+  line.feature = feature;
+
+  let marker = new maptalks.Marker([x,y,z], { symbol: getSymbol(feature, opacity) });
+  marker.feature = feature; // leaflet uses marker.feature after loading geojson
+  layers[t.group] = layers[t.group] || [];
+  layers[t.group].push(marker);
+
+  marker.setInfoWindow({autoCloseOn: 'click'})
+  //.on('dragend', onDragEnd)
+  .on('click', popupOnClick)
+  .on('contextmenu', e=> {
+    if (!mouseMoved) toggleMarked(e.target.feature.properties.name);
+  })
+
+  let title = t.title || feature.properties.type;
+
+  const tooltip = new maptalks.ui.ToolTip(`${title} (${translate(t.group)}) ${getSubtitle(feature)}`, {
+      showTimeout: 100, // Delay in milliseconds before showing the tooltip
+      dx: 10,           // X-offset from the geometry
+      dy: -10           // Y-offset from the geometry
+  });
+
+  tooltip.addTo(marker);
+
+  //if (t.type =='Inventory_Toothpin_C') console.log(feature);
+
+  icons[t.type] = iconData[t.icon];
+
+  counters[t.group] = counters[t.group] || {};
+  counters[t.group][t.type] = (counters[t.group][t.type] || 0) + 1;
+
+  if (t.group=='misc') { marker.hide(); line.hide();}
+
+  return marker;
+}
+
+function getBaseURL() {
+  return window.location.href.replace(/#.*$/,'');
+}
+
+function getMapURL(id) { return getBaseURL() + '#' + encodeURIComponent(id); }
+
+function getWikiURL(title) {
+  if (title.startsWith('«') && title.endsWith('«')) title = title.slice(1,-1);
+  let wikiPrefix = 'https://supraverse.fandom.com/wiki/';
+  return wikiPrefix + encodeURIComponent(title);
+}
+
+
+let copyLink = e=>{ copyToClipboard(e.target.href); return false; };
+
+function copyToClipboard(text) {
+  let input = document.body.appendChild(document.createElement("input"));
+  input.value = text;
+  const prev = document.activeElement;
+  input.focus();
+  input.select();
+  document.execCommand('copy');
+  input.parentNode.removeChild(input);
+  if (prev) prev.focus();
+  document.getElementById('alert').classList.remove('closed');
+  setTimeout(function(e){ document.getElementById('alert').classList.add('closed') },1500);
+}
+
+function getSubtitle(feature) {
+  let t = getType(feature);
+  let o = feature.properties;
+  let s = '';
+  if (o.spawns) {
+    s = getType({...feature, 'properties': {...o, 'type': o.spawns, 'name': o.name + ':spawns' }}).title;
+    s = s.replace(/ [+-]*\{.+\}(%*)/,''); // remove {} formatting
+    if (s==t.title) s='';
+  }
+  if (o.coins) return `${o.coins} coins`;
+  let title = o.text || o.achievement || s;
+
+
+  if (!title) {
+    if (o.area) title = o.area.replace('Supraworld.Area.','');
+    if (o.progression) title += ' (' + o.progression.replace('Supraworld.Story.','') + ')';
+  }
+
+  if (o.hidden===true || o.exists===false) title +=' (Hidden)';
+
+  return title
+}
+
+
+function popupOnClick(e) {
+  //console.log('clicked', e.target.feature);
+
+  //hideTooltipExt(e);
+
+  let marker = e.target;
+
+  let feature = marker.feature;
+  let o = feature.properties;
+
+  const popup = document.querySelector('#popup-template').content.cloneNode(true);
+
+  let info = getType(feature);
+
+  popup.querySelector('#popup-title').innerHTML = `<a href="#${info.type}" onclick="return filterItems({type:'${info.type}'})">${info.title}</a>`;
+  popup.querySelector('#popup-title').title = o.name;
+
+  popup.querySelector('#popup-subtitle').innerHTML = `<a href="#${info.group}" onclick="return filterItems({group:'${info.group}'})">${translate(info.group)}</a>`;
+
+  popup.querySelector('#popup-note').textContent = getSubtitle(feature);
+  popup.querySelector('#popup-data').innerHTML = '<hr/><pre>'+JSON.stringify(o, null, 2) + '</pre>';
+
+
+  popup.querySelector('#popup-data-toggle').onclick = function(e) {
+    let data_id = document.querySelector('#popup-data-toggle').getAttribute('data-target');
+    settings.debugMode = !toggleClass(document.querySelector('#'+data_id),'collapsed');
+    saveSettings();
+  };
+
+  setClass(popup.querySelector('#popup-data'), settings.debugMode!=true, 'collapsed');
+
+  popup.querySelector('#popup-close').onclick = function() {  e.target._infoWindow.hide(); };
+
+
+  let t = feature.geometry.coordinates;
+  let teleport = `${t[0]} ${t[1]} ${t[2]}`
+  c = popup.querySelector('#popup-marker-id-link')
+  c.href = '#' + teleport;
+  c.title = `Copy Coordinates (${teleport})`;
+  c.onclick = function(e){ copyToClipboard(e.target.href.split('#')[1].replaceAll('%20',' ')); return false; };
+
+  c = popup.querySelector('#popup-form-id-link');
+  c.href = '#' + o.name;
+  c.title = `Copy Name (${o.name})`;
+  c.onclick = function(e){ copyToClipboard(e.target.href.split('#')[1]); return false; };
+
+  c = popup.querySelector('#popup-map-link');
+  c.href = getMapURL(o.name);
+  c.title = `Copy Map URL (#${o.name})`
+  c.onclick = copyLink;
+  c.innerHTML = '<i class="fa fa-link"></i>';
+
+  c = popup.querySelector('#popup-wiki-link');
+  c.href = getWikiURL(info.title);
+  c.title = `Open Wiki ("${info.title}")`;
+  c.onclick = null;
+  c.innerHTML = '<i class="fa-brands fa-wikipedia-w"></i>';
+
+  c = popup.querySelector('#popup-found');
+  c.checked = settings.markedItems[getBaseName(o.name)]==true;
+  c.onclick = function() { toggleMarked(o.name) };
+
+  let contentElement = popup.firstElementChild;
+
+  e.target._infoWindow.setOptions({custom: true, dy: -12 });
+  e.target._infoWindow.setContent(contentElement);
+
+  contentElement.addEventListener('contextmenu', function(e) { e.stopPropagation()}, true); // enable default context menu
+}
+
+
+function getBaseName(name) {
+  return name.split(':').shift();
+}
+
+function toggleMarked(id) {
+  let name = getBaseName(id);
+
+  if (settings.markedItems[name]) {
+    delete settings.markedItems[name];
+  } else {
+    settings.markedItems[name] = true;
+  }
+
+  let groupLayer = map.getLayer('GroupGLLayer');
+  for (const layer of groupLayer.getLayers()) {
+    for (marker of layer._geoList) {
+      if (marker.feature.properties.name == name || marker.feature.properties.name == name+':spawns') {
+        let opacity = settings.markedItems[name] ? markedOpacity : 1;
+        marker.updateSymbol({markerOpacity: opacity, lineOpacity: opacity });
+      }
+    }
+  }
+
+  saveSettings();
+}
+
+function loadMarkersBatched(features, options) {
+  const batchSize = 1000;
+  let currentIndex = 0;
+  let result = [];
+  function processBatch() {
+    const batch = [];
+    const endIndex = Math.min(currentIndex + batchSize, features.length);
+    for (; currentIndex < endIndex; currentIndex++) {
+
+      let feature = features[currentIndex];
+      let marker = addMarker(feature, options);
+      batch.push(marker);
+
+      let o = feature.properties;
+
+      if (o.spawns) {
+        batch.push(addMarker({...feature, 'properties': {'name': o.name +':spawns', 'type': o.spawns}}, options));
+      }
+
+    }
+    result.push(...batch);
+    if (currentIndex < features.length) {
+      setTimeout(processBatch, 0); // Allow time for browser events
+    } else {
+      addMarkers(result, options);
+    }
+  }
+  setTimeout(processBatch, 0); // Start processing asynchronously
+}
+
+function loadMarkers(data, mapId) {
+
+  let area = mapId;
+
+  let options = {layers: {}, counters: {}, icons: {}};
+
+  if (mapId!='sw') {
+    let features = [];
+    for (o of data) {
+      let [x,y,z] = [o.lng, o.lat, o.alt];
+      let c = [x,y,z];
+      let feature = {type: 'Feature', geometry: {type: 'Point', coordinates: c}, properties: o};
+      features.push(feature);
+    }
+    data = features;
+  }
+
+/*
+  for (feature of data) {
+    addMarker(feature, options);
+    let o = feature.properties;
+    if (o.spawns) {
+      addMarker({...feature, 'properties': {...feature.properties, 'type': o.spawns}}, options);
+    }
+  }
+*/
+
+  loadMarkersBatched(data, options);
+}
+
+function addMarkers(markers, options) {
+
+  let [layers,counters,icons] = [options.layers, options.counters, options.icons];
+
+  let groupLayer = new maptalks.GroupGLLayer('GroupGLLayer').addTo(map);
+
+  for (const [name, geometries] of Object.entries(layers)) {
+    if (name=='lines') {
+      new maptalks.LineStringLayer(name, geometries, {
+        style: { filter: true, symbol: { lineColor: '#eee', lineWidth: 4, lineOpacity: 0.75 } },
+      }).addTo(groupLayer);
+    } else {
+      new maptalks.PointLayer(name, geometries, {
+        sceneConfig: { depthFunc: '<'},
+      }).addTo(groupLayer);
+    }
+  }
+
+  function toggleGroup(group) {
+    searchControl._input.value='';
+    filterItems({group: group});
+  }
+
+  function toggleItem(type) {
+    searchControl._input.value='';
+    filterItems({type:type});
+  }
+
+  // let tr = s=> typeData[s]?.title || (s[0].toUpperCase()+s.slice(1));
+  let tr = s=> typeData[s]?.title || translate(s);
+
+  markersControl = new MarkersControl(counters, {icons: icons, weights:{collectible: 1, misc:-2, actors:-1}, groupCallback: toggleGroup, itemCallback: toggleItem, translate: tr });
+
+  let name = mapParam.markerName;
+  if (name) {
+    searchControl._input.value = name;
+    filterItems({text:name});
+  } else {
+    let options = parseSearchOptions(settings.filter);
+    filterItems(options);
+    if (options.text) {
+      searchControl._input.value = options.text;
+    }
+  }
+
+  mapParam = {};
+
+  saveSettings();
+}
+
+function parseSearchOptions(line) {
+  line = line || '';
+  const result = {};
+  const groupMatch = line.match(/\bgroup:([^\s]+)/);
+  const typeMatch = line.match(/\btype:([^\s]+)/);
+  if (groupMatch) result.group = groupMatch[1];
+  if (typeMatch) result.type = typeMatch[1];
+  const text = line
+    .replace(/\bgroup:[^\s]+/, "")
+    .replace(/\btype:[^\s]+/, "")
+    .trim();
+  if (text) result.text = text;
+  return result;
+}
+
+function filterItemsExt(s) {
+  let options = parseSearchOptions(s);
+  filterItems(options);
+}
+
+function filterItems(options) {
+  let groupLayer = map.getLayer('GroupGLLayer');
+
+  let [type, group, text] = [options.type, options.group, options.text];
+
+  //console.log('filtering by', type, group, text);
+
+  if (!group && !type && !text) text = ''; // select all
+
+  let terms = [];
+  if (text) {
+    terms = text.toLowerCase().split(/\s+/);
+  }
+
+  let counter = 0
+  let lastMarker = null;
+
+  for (const layer of groupLayer.getLayers()) {
+    for (marker of layer._geoList) {
+
+      let res = false;
+
+      if (marker.feature) {
+        let t = getType(marker.feature);
+        let o = marker.feature.properties;
+        res = text =='' || t.type == type || t.group==group;
+
+        let mask = {}
+
+        if (!res && terms.length) {
+          for (let s of [t.type, t.title, ...Object.values(o), ...Object.keys(o)]) {
+
+            if (!s) continue;
+
+            s = String(s).toLowerCase();
+
+            for (const term of terms) {
+              if (mask[term]) continue;
+              if (s.includes(term)) {
+                mask[term] = true;
+              }
+            }
+          }
+
+          res = terms.every(term=>mask[term]);
+        }
+      }
+
+      if (res) {
+        marker.show();
+
+        if (marker.type != 'LineString') {
+          counter += 1
+          lastMarker = marker;
+        }
+
+      } else {
+        marker.hide();
+      }
+    }
+  }
+
+  // open popup on last marker, counter==2 because lines
+  if (counter==1 && lastMarker) {
+    let marker = lastMarker;
+    popupOnClick({target: marker});
+    marker.openInfoWindow();
+  }
+
+  searchControl._input.title = `${counter} markers`;
+
+  settings.filter = group ? 'group:'+group : ( type ? 'type:'+type : text );
+  //console.log('saving filter', settings.filter);
+
+  // update markers control
+  let allSelected = text === '';
+  document.querySelectorAll('.markers-control-group').forEach(group => {
+    const items = group.parentElement.querySelectorAll('.markers-control-item');
+    let anySelected = false;
+    const groupSelected = allSelected || group.dataset.name === options.group;
+    items.forEach(item => {
+      const selected = groupSelected || item.dataset.name === options.type;
+      item.classList.toggle('selected', selected);
+      anySelected ||= selected;
+    });
+    group.classList.toggle('selected', groupSelected || anySelected);
+  });
+
+  saveSettings();
+
+  return false;
+}
+
+
+function setMarkerZRecursive(layer) {
+  if (layer instanceof maptalks.VectorLayer || layer instanceof maptalks.PointLayer) {
+    layer.getGeometries().forEach(g => {
+      if (g instanceof maptalks.Marker) {
+        //console.log(g);
+        g.setZIndex(0);
+      }
+    });
+  } else {
+    if (layer.getLayers) layer.getLayers().forEach(setMarkerZRecursive);
+  }
+}
+
+
+function setHeight() {
+  map.getLayers().forEach(setMarkerZRecursive);
+}
+
+
+function loadMap(mapId) {
+  let config = maps[mapId];
+  let area = mapId;
+  let tileSize = config.tileSize;
+  let mapSize = config.bounds.right - config.bounds.left;
+  let maxZoom = 19;
+
+  gameTitle = config.title;
+
+  for (id in maps) {
+    localData[id] = localData[id] || {};
+    localData[id].markedItems = localData[id].markedItems || {};
+    localData[id].activeLayers = localData[id].activeLayers || {'collectible':true};
+    localData[id].filter = localData[id].filter || 'group:collectible';
+  }
+
+  settings = localData[mapId];
+
+  settings.version = settings.version || Object.keys(config.versions)[Object.keys(config.versions).length-1];
+
+  document.querySelector('.version').innerHTML = `<select>${Object.entries(config.versions).sort((a,b)=>b[0]-a[0]).map(([key,value])=>`<option value="${key}"${key==settings.version?' selected':''}>Version ${key} (${new Date(value.date).toLocaleDateString("en",{day:"numeric",month:"short",year:"numeric"})})</option>`).join('')}</select>`;
+
+  document.querySelector('.version select').onchange = e=> {
+    settings.version = e.target.value;
+    saveSettings();
+    location.reload();
+  }
+
+  if (map) map.remove();
+
+  map = new maptalks.Map('map', {
+    zoom: 1,
+    center: [config.center.left, config.center.top],
+    maxZoom: maxZoom,
+    spatialReference: {
+      projection: 'identity',
+      resolutions: Array.from({length: maxZoom + 1},(_,i) => mapSize / tileSize / (1<<i)),
+      fullExtent: config.bounds,
+    },
+    zoomControl: {
+      position  : {bottom: 70, right: 20},
+      zoomLevel : false,
+    },
+    doubleClickZoom: false,
+    //heightFactor: 0.01, // optional (doesn't really work? messes up infowindow)
+    enableAltitude: false,
+
+    baseLayer: new maptalks.GroupTileLayer('baseLayers', 
+      Object.entries(maps).map(([name, config])=>
+        new maptalks.TileLayer(name, {
+          maxAvailableZoom: config.maxZoom,
+          urlTemplate: (mapId!='sw' ? dataPrefix:'') + (config.versions?.[settings.version]?.tiles || config.tiles),
+          repeatWorld: false,
+          tileSize: tileSize,
+          tileSystem: [1, -1, config.bounds.left, config.bounds.top],
+          visible: name==area,
+        })
+      )
+    ),
+
+  });
+
+  let gap = mapSize/2;
+  let extent = new maptalks.Extent(config.bounds.left-gap, config.bounds.top-gap, config.bounds.right+gap, config.bounds.bottom+gap);
+  map.setMaxExtent(extent);
+
+  let layerSwitcher = new maptalks.control.LayerSwitcher({
+    position  : 'bottom-left',
+    //baseTitle : 'Base Layers',
+    //overlayTitle : 'Overlays',
+    containerClass : 'maptalks-layer-switcher',
+  });
+
+  map.addControl(layerSwitcher);
+
+  layerSwitcher.getContainer().addEventListener('click', e => {
+    let id = e.target.nextSibling.innerText.trim();
+    if (Object.keys(maps).includes(id)){
+      loadMap(id);
+    }
+  });
+
+/*
+  layerSwitcher.on('layerchange', function(event) {
+    const baseLayerGroup = map.getBaseLayer(); // Returns the group, not the active layer
+    let currentBaseLayer;
+    baseLayerGroup.getLayers().forEach(layer => {
+        if (layer.isVisible()) {
+          if (Object.keys(maps).includes(layer.getId())){
+            loadMap(layer.getId());
+          }
+        }
+    });
+  });
+*/
+
+  map.on('mousedown touchstart', function(e) {
+    document.getElementById('map').focus(); // needs tabindex on the map element
+  });
+
+  //map.config({heightFactor: 0.00001}); // doesn't help, messes up infowindow
+
+  map.on('layerchange', function (event) {
+      console.log('Base layer changed:', event.layer);
+  });
+
+  map.on('viewchange', e=> {
+    settings.center = [e.new.center[0],e.new.center[1]];
+    settings.bearing = e.new.bearing;
+    settings.pitch = e.new.pitch;
+    settings.zoom = e.new.zoom;
+    //if (enableAltitude && autoAltitude) {
+      //groupLayer.setOptions({enableAltitude: map.getPitch()!=0});
+    //}
+    //console.log('zoom', settings.zoom);
+    saveSettings();
+  });
+
+  map.setView({
+    center: settings.center || [config.center.left, config.center.top],
+    zoom: settings.zoom || 0,
+    bearing: settings.bearing || 0,
+    pitch: settings.pitch || 0,
+  })
+
+  localData.mapId = mapId;
+
+  let compassControl = new maptalks.control.Compass({position  : 'bottom-right'}).addTo(map)._compass.onclick = (e)=>map.getBearing()==0 && map.animateTo({ pitch: map.getPitch()==0 ? defaultPitch : 0 })
+
+
+  searchControl = new SearchControl();
+  searchControl._handleSubmit = function() {
+    filterItemsExt(searchControl._input.value);
+  }
+
+  searchControl._input.setAttribute('placeholder', gameTitle);
+
+  if (mapId=='sw') {
+    loadGzip(config.versions?.[settings.version]?.data||config.data, data => {
+      loadMarkers(markerLoader(JSON.parse(data)), mapId);
+    });
+    return;
+  }
+
+  fetch(dataPrefix + `data/markers.${mapId}.json`).then(r=>r.json()).then(data=>{
+    //console.log('loaded', data.features.length, 'markers');
+    loadMarkers(data, mapId);
+  })
+}
+
+function renderFAIconToImageURL(fa_class, bg, fg='white', size=48) {
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+
+  function drawFAIcon(prefix, iconName, color, pixelSize, dy = 0) {
+    let icon = FontAwesome.icon({ prefix, iconName });
+
+    if (!icon) icon = FontAwesome.icon({ prefix:'fa', iconName: 'question-circle' });
+
+    const [w, h, , , path] = icon.icon;
+    const scale = pixelSize / h;
+    const iconWidthPx = w * scale;
+    const dx = (size - iconWidthPx) / 2;
+    const dyPx = (size - pixelSize) / 2 + dy;
+    ctx.setTransform(scale, 0, 0, scale, dx, dyPx);
+    ctx.fillStyle = color;
+    ctx.fill(new Path2D(path));
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+  }
+
+  function parseFAClass(faClass) {
+    const parts = faClass.trim().split(/\s+/);
+    const prefix = parts.find(p => p.startsWith('fa-') || p === 'fa')?.replace('fa-', '') || 'solid';
+    const iconName = parts.find(p => p.startsWith('fa-') && p !== 'fa' && p !== `fa-${prefix}`)?.replace('fa-', '');
+    const prefixMap = { solid: 'fas', regular: 'far', light: 'fal', thin: 'fat', duotone: 'fad', brands: 'fab' };
+    return { prefix: prefixMap[prefix] || 'fas', iconName };
+  }
+
+  fg = fg || 'white';
+  bg = bg || 'grey';
+  let t = parseFAClass(fa_class);
+  drawFAIcon('fas', 'location-pin', 'black', size * 1.0);
+  drawFAIcon('fas', 'location-pin', bg, size * 0.976);
+  drawFAIcon(t.prefix, t.iconName, fg, size * 0.45, -size/8);
+  return canvas.toDataURL('image/png');
+}
+
+window.onload = function(event) {
+
+  if (location.hash.length>1) {
+    let param = decodeURIComponent(location.hash.slice(1));
+    mapParam.markerName = param;
+  }
+
+
+  window.addEventListener("keydown", function (e) {
+
+    if (e.target.className=='search-input') {
+      return;
+    }
+
+    if (e.code=='KeyR' && !e.ctrlKey) {
+      if (map.getBearing()!=0) {
+        map.animateTo({ bearing: 0 });
+      } else {
+        map.animateTo({ pitch: map.getPitch()==0 ? defaultPitch : 0 });
+      }
+    }
+
+    switch (e.code) {
+      case 'Digit1': loadMap(Object.keys(maps)[0]); break;
+      case 'Digit2': loadMap(Object.keys(maps)[1]); break;
+      case 'Digit3': loadMap(Object.keys(maps)[2]); break;
+      case 'Digit4': loadMap(Object.keys(maps)[3]); break;
+    }
+
+  });
+
+  localData.mapId = localData.mapId || Object.keys(maps)[0];
+  let mapId = localData.mapId;
+
+  document.querySelector('#load_data').onclick = loadLocalData; 
+  document.querySelector('#save_data').onclick = saveLocalData;
+  document.querySelector('#reset_data').onclick = resetLocalData;
+  document.querySelector('#copy_path').onclick = copySavePath;
+  document.querySelector('#import_save').onclick = importSaveFile;
+
+  let promises = [
+    'data/types.json',
+    'data/icons.json',
+  ].map(url=>fetch(url).then(r=>r.json()));
+
+  Promise.all(promises).then(data => {
+    [typeData, iconData] = data;
+    iconData['misc'] = {"class": "fa-solid fa-circle-question", "bg": "grey"};
+    iconImages = Object.fromEntries(Object.entries(iconData).map(([k,v]) => [k, renderFAIconToImageURL(v.class, v.bg, v.fg, iconSize)]));
+    loadMap(mapId);
+  }).catch(error=>alert(`A network error occurred. This might be a CORS issue. Check the browser console for details.\n\nError: ${error}`));
+}
+
+function saveSettings() {
+  localStorage.setItem(localDataName, JSON.stringify(localData));
+}
+
+function resetLocalData() {
+  if (confirm('Are you sure you want to reset settings?')) {
+    localStorage.removeItem(localDataName);
+    location.reload();
+  }
+}
+
+function loadLocalDataExt() {
+  var file = document.querySelector("#file").files[0];
+  if (file) {
+    var reader = new FileReader();
+    reader.readAsText(file, "UTF-8");
+    reader.onload = function (evt) {
+      let data = evt.target.result;
+      evt.target.value = null;
+      try {
+        localData = JSON.parse(data);
+        settings = localData[mapId];
+        console.log('New settings loaded.');
+        saveSettings();
+        location.reload();
+      } catch(e) {
+        console.log(e);
+      }
+    }
+    reader.onerror = function (evt) {
+      alert('error reading file');
+    }
+  }
+}
+
+function loadLocalData() {
+  document.querySelector('#file').onchange = function(e) {
+    loadLocalDataExt();
+  }
+  document.querySelector('#file').value = null;
+  document.querySelector('#file').accept = '.json';
+  document.querySelector('#file').click();
+}
+
+function saveLocalData() {
+  let data = localStorage.getItem(localDataName);
+  if (window.showSaveFilePicker) {
+    window.showSaveFilePicker({suggestedName: localDataName+'.json'}).then(f=>f.createWritable()).then(f=>f.write(data).then(()=>f.close()));
+  } else {
+    let filename = localDataName+'.json';
+    let blob = new Blob([data], {type: "text/json"});
+    if(navigator.msSaveOrOpenBlob) {
+        navigator.msSaveOrOpenBlob(blob, filename);
+    } else {
+        var a = document.body.appendChild(document.createElement("a"));
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+        a.remove();
+    }
+  }
+}
+
+function markItems() {
+  let groupLayer = map.getLayer('GroupGLLayer');
+  for (const layer of groupLayer.getLayers()) {
+    for (marker of layer._geoList) {
+      let name = getBaseName(marker.feature.properties.name);
+      let opacity =  (settings.markedItems[name] || settings.markedItems[name+':spawns']) ? markedOpacity : 1;
+      marker.updateSymbol({markerOpacity: opacity, lineOpacity: opacity });
+    }
+  }
+}
+
+
+function importSaveFileExt() {
+  var file = document.querySelector("#game_file").files[0];
+  if (file) {
+    var reader = new FileReader();
+    reader.readAsText(file, "UTF-8");
+    reader.onload = function (evt) {
+      let data = evt.target.result;
+      evt.target.value = null;
+      try {
+
+        gameData = JSON.parse(data);
+        console.log('Save file loaded.');
+
+        let count = 0;
+
+        for(const [key,o] of Object.entries(gameData.dynamicSaveData.ObjectData)) {
+          if (o.ItemIsTaken || o.bFound || o.Active || o.bPickedUp || o.Exists==false || o.State>1 || o.State===0 || o.bUnlocked || o.bIsBroken) {
+            let name = key.split('.').pop();
+            settings.markedItems[name] = true;
+            count += 1;
+          }
+        }
+
+        markItems();
+        saveSettings();
+
+        setTimeout(()=>alert(`Marked ${count} items.`),0);
+
+      } catch(e) {
+        console.log(e);
+      }
+    }
+    reader.onerror = function (evt) {
+      alert('error reading file');
+    }
+  }
+}
+
+let savePath = '%LocalAppData%\\Supraworld\\Saved\\SaveGames\\Supraworld\\';
+
+function copySavePath(e) {
+  copyToClipboard(savePath);
+}
+
+function importSaveFile() {
+  document.querySelector('#game_file').onchange = function(e) {
+    importSaveFileExt();
+  }
+  document.querySelector('#game_file').value = null;
+  document.querySelector('#game_file').accept = '.json';
+  document.querySelector('#game_file').click();
+}
+
+</script>
+</body>
+</html>
