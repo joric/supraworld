@@ -551,7 +551,7 @@ function addMarkers(markers, options) {
   if (filterOptions.text) {
     searchControl._input.value = filterOptions.text;
   } else if (filterOptions.title) {
-    searchControl._input.value = filterOptions.title;
+    searchControl._input.value = 'title:'+filterOptions.title;
   }
 
   mapParam = {};
