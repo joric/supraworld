@@ -169,6 +169,7 @@ function markerLoader(data) {
 
     if ((m = targets[o.Name]) && (t = m.Properties?.TargetLocation)) {
       prop.target = [t.X, t.Y, t.Z];
+      if (v = m.Properties?.Velocity) prop.velocity = v;
     }
 
     features.push(feature);
