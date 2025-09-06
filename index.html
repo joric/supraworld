@@ -359,7 +359,7 @@ function popupOnClick(e) {
   let id = (info.title||'').replaceAll(' ','_');
   let backlink = getMapURL(id);
 
-  popup.querySelector('#popup-title').innerHTML = `<a href="#${backlink}" onclick="return filterItems({type:'${info.type}'})">${info.title}</a>`;
+  popup.querySelector('#popup-title').innerHTML = `<a href="${backlink}" onclick="return filterItems({type:'${info.type}'})">${info.title}</a>`;
   popup.querySelector('#popup-title').title = backlink;
 
   popup.querySelector('#popup-subtitle').innerHTML = `<a href="#group:${info.group}" onclick="return filterItems({group:'${info.group}'})">${translate(info.group)}</a>`;
