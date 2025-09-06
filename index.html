@@ -683,14 +683,16 @@ function loadMap(mapId) {
 
   settings = localData[mapId];
 
-  settings.version = settings.version || Object.keys(config.versions)[Object.keys(config.versions).length-1];
-
-  document.querySelector('.version').innerHTML = `<select>${Object.entries(config.versions).sort((a,b)=>b[0]-a[0]).map(([key,value])=>`<option value="${key}"${key==settings.version?' selected':''}>Version ${key} (${new Date(value.date).toLocaleDateString("en",{day:"numeric",month:"short",year:"numeric"})})</option>`).join('')}</select>`;
-
-  document.querySelector('.version select').onchange = e=> {
-    settings.version = e.target.value;
-    saveSettings();
-    location.reload();
+  if (config.versions) {
+    settings.version = settings.version || config.versions && Object.keys(config.versions)[Object.keys(config.versions).length-1];
+    document.querySelector('.version').innerHTML = `<select>${Object.entries(config.versions).sort((a,b)=>b[0]-a[0]).map(([key,value])=>`<option value="${key}"${key==settings.version?' selected':''}>Version ${key} (${new Date(value.date).toLocaleDateString("en",{day:"numeric",month:"short",year:"numeric"})})</option>`).join('')}</select>`;
+    document.querySelector('.version select').onchange = e=> {
+      settings.version = e.target.value;
+      saveSettings();
+      location.reload();
+    }
+  } else {
+    document.querySelector('.version').textContent = '';
   }
 
   if (map) map.remove();
