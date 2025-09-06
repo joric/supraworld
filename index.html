@@ -545,7 +545,7 @@ function addMarkers(markers, options) {
     if (name.includes(':')) {
       settings.filter = name;
     } else {
-      settings.filter = 'title:'+ name;
+      settings.filter = 'title:' + name;
     }
   }
 
@@ -554,7 +554,7 @@ function addMarkers(markers, options) {
   if (filterOptions.text) {
     searchControl._input.value = filterOptions.text;
   } else if (filterOptions.title) {
-    searchControl._input.value = 'title:'+filterOptions.title;
+    //searchControl._input.value = 'title:'+filterOptions.title;
   }
 
   mapParam = {};
@@ -612,7 +612,7 @@ function filterItems(options) {
       if (marker.feature) {
         let t = getType(marker.feature);
         let o = marker.feature.properties;
-        res = text =='' || t.type == type || t.group==group || o.name == title;
+        res = text =='' || t.type == type || t.group==group || o.name==title;
 
         if (title && t.title) {
           let src = t.title.toLowerCase();
