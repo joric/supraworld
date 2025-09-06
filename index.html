@@ -539,13 +539,19 @@ function addMarkers(markers, options) {
 
   let name = mapParam.markerName;
   if (name) {
-    settings.filter = name;
+    if (name.includes(':')) {
+      settings.filter = name;
+    } else {
+      settings.filter = 'title:'+ name;
+    }
   }
 
   let filterOptions = parseSearchOptions(settings.filter);
   filterItems(filterOptions);
   if (filterOptions.text) {
     searchControl._input.value = filterOptions.text;
+  } else if (filterOptions.title) {
+    searchControl._input.value = filterOptions.title;
   }
 
   mapParam = {};
@@ -554,17 +560,22 @@ function addMarkers(markers, options) {
 }
 
 function parseSearchOptions(line) {
-  line = line || '';
+  if (!line) line = '';
+
+  const terms = ['group', 'type', 'title'];
   const result = {};
-  const groupMatch = line.match(/\bgroup:([^\s]+)/);
-  const typeMatch = line.match(/\btype:([^\s]+)/);
-  if (groupMatch) result.group = groupMatch[1];
-  if (typeMatch) result.type = typeMatch[1];
-  const text = line
-    .replace(/\bgroup:[^\s]+/, "")
-    .replace(/\btype:[^\s]+/, "")
-    .trim();
-  if (text) result.text = text;
+
+  for (const key of terms) {
+    const match = line.match(new RegExp(`\\b${key}:([^\\s]+)`));
+    if (match) {
+      result[key] = match[1];
+      line = line.replace(match[0], ''); // strip from text
+    }
+  }
+
+  line = line.trim();
+  if (line) result.text = line;
+
   return result;
 }
 
@@ -576,11 +587,11 @@ function filterItemsExt(s) {
 function filterItems(options) {
   let groupLayer = map.getLayer('GroupGLLayer');
 
-  let [type, group, text] = [options.type, options.group, options.text];
+  let [type, group, title, text] = [options.type, options.group, options.title, options.text];
 
   //console.log('filtering by', type, group, text);
 
-  if (!group && !type && !text) text = ''; // select all
+  if (!group && !type && !title && !text) text = ''; // select all
 
   let terms = [];
   if (text) {
@@ -598,7 +609,13 @@ function filterItems(options) {
       if (marker.feature) {
         let t = getType(marker.feature);
         let o = marker.feature.properties;
-        res = text =='' || t.type == type || t.group==group;
+        res = text =='' || t.type == type || t.group==group || o.name == title;
+
+        if (title && t.title) {
+          let src = t.title.toLowerCase();
+          let term = title.toLowerCase();
+          res = src==term || src==term.replace('_',' ');
+        }
 
         let mask = {}
 
@@ -665,7 +682,6 @@ function filterItems(options) {
 
   return false;
 }
-
 
 function setMarkerZRecursive(layer) {
   if (layer instanceof maptalks.VectorLayer || layer instanceof maptalks.PointLayer) {
