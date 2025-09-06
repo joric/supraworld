@@ -356,10 +356,10 @@ function popupOnClick(e) {
 
   let info = getType(feature);
 
-  popup.querySelector('#popup-title').innerHTML = `<a href="#${info.type}" onclick="return filterItems({type:'${info.type}'})">${info.title}</a>`;
+  popup.querySelector('#popup-title').innerHTML = `<a href="#type:${info.type}" onclick="return filterItems({type:'${info.type}'})">${info.title}</a>`;
   popup.querySelector('#popup-title').title = o.name;
 
-  popup.querySelector('#popup-subtitle').innerHTML = `<a href="#${info.group}" onclick="return filterItems({group:'${info.group}'})">${translate(info.group)}</a>`;
+  popup.querySelector('#popup-subtitle').innerHTML = `<a href="#group:${info.group}" onclick="return filterItems({group:'${info.group}'})">${translate(info.group)}</a>`;
 
   popup.querySelector('#popup-note').textContent = getSubtitle(feature);
   popup.querySelector('#popup-data').innerHTML = '<hr/><pre>'+JSON.stringify(o, null, 2) + '</pre>';
@@ -539,14 +539,13 @@ function addMarkers(markers, options) {
 
   let name = mapParam.markerName;
   if (name) {
-    searchControl._input.value = name;
-    filterItems({text:name});
-  } else {
-    let options = parseSearchOptions(settings.filter);
-    filterItems(options);
-    if (options.text) {
-      searchControl._input.value = options.text;
-    }
+    settings.filter = name;
+  }
+
+  let filterOptions = parseSearchOptions(settings.filter);
+  filterItems(filterOptions);
+  if (filterOptions.text) {
+    searchControl._input.value = filterOptions.text;
   }
 
   mapParam = {};
