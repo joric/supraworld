@@ -69,13 +69,6 @@ function markerLoader(data) {
     return matrix;
   }
 
-  function parseObjectName(s) {
-    //StaticMeshComponent'Supraworld:PersistentLevel.PuzzleCloud_C_UAID_7085C2B20F0EC8E101_1168677350.Cloud'
-
-    let t = s.split("'");
-    return 
-  }
-
   function getLocation(o) {
     let matrix = getMatrix(o);
     (m = areas[area]) && matrix.premultiply(m);

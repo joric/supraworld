@@ -239,6 +239,23 @@ function addMarker(feature, options) {
   layers.lines.push(line);
   line.feature = feature;
 
+/*
+  var symbol = {
+    url: 'js/untitled.glb',
+    rotation: [0, 0, 0],
+    //fixSizeOnZoom: 0,
+    //modelHeight: 5000,
+    scaleX: 1000,
+    scaleY: 1000,
+    scaleZ: 5000,
+  };
+
+  layers.gltf = layers.gltf || [];
+  let gltf = new maptalks.GLTFMarker([x,y,z], { symbol: symbol});
+  layers.gltf.push(gltf);
+  gltf.feature = feature;
+*/
+
   let marker = new maptalks.Marker([x,y,z], { symbol: getSymbol(feature, opacity) });
   marker.feature = feature; // leaflet uses marker.feature after loading geojson
   layers[t.group] = layers[t.group] || [];
@@ -493,6 +510,11 @@ function addMarkers(markers, options) {
       new maptalks.LineStringLayer(name, geometries, {
         style: { filter: true, symbol: { lineColor: '#eee', lineWidth: 4, lineOpacity: 0.75 } },
       }).addTo(groupLayer);
+    } else if (name=='gltf') {
+      new maptalks.GLTFLayer('gltf', geometries,{
+        opacity: 0.5,
+      }).addTo(groupLayer);
+
     } else {
       new maptalks.PointLayer(name, geometries, {
         sceneConfig: { depthFunc: '<'},
