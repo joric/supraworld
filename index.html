@@ -356,8 +356,11 @@ function popupOnClick(e) {
 
   let info = getType(feature);
 
-  popup.querySelector('#popup-title').innerHTML = `<a href="#type:${info.type}" onclick="return filterItems({type:'${info.type}'})">${info.title}</a>`;
-  popup.querySelector('#popup-title').title = o.name;
+  let id = (info.title||'').replaceAll(' ','_');
+  let backlink = getMapURL(id);
+
+  popup.querySelector('#popup-title').innerHTML = `<a href="#${backlink}" onclick="return filterItems({type:'${info.type}'})">${info.title}</a>`;
+  popup.querySelector('#popup-title').title = backlink;
 
   popup.querySelector('#popup-subtitle').innerHTML = `<a href="#group:${info.group}" onclick="return filterItems({group:'${info.group}'})">${translate(info.group)}</a>`;
 
@@ -614,7 +617,7 @@ function filterItems(options) {
         if (title && t.title) {
           let src = t.title.toLowerCase();
           let term = title.toLowerCase();
-          res = src==term || src==term.replace('_',' ');
+          res = src==term || src==term.replaceAll('_',' ');
         }
 
         let mask = {}
