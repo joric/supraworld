@@ -206,90 +206,6 @@ let mouseMoved = false;
 document.addEventListener('mousedown', function(event) {mouseMoved = false; });
 document.addEventListener('mousemove', function(event){mouseMoved = true;});
 
-function addMarker(feature, options) {
-  let t = getType(feature);
-
-  //if (t.group=='misc' || t.group=='actors') return;
-
-  let [x,y,z] = feature.geometry.coordinates;
-
-  z /= 4;
-
-  //console.log(feature.geometry.coordinates);
-
-  let getSymbol = function(feature,opacity=1) {
-    return {
-      //markerFile   : 'js/lib/maptalks-gl/images/1.png',
-      markerFile   : iconImages[t.icon] || iconImages['misc'],
-      markerWidth  : iconSize,
-      markerHeight : iconSize,
-      markerDx     : 0,
-      markerDy     : 0,//-Math.round(iconSize/2),
-      markerOpacity: opacity,
-      //markerVerticalAlignment: 'middle',
-    };
-  };
-
-  let [layers,counters,icons] = [options.layers, options.counters, options.icons];
-
-  let opacity = settings.markedItems[getBaseName(feature.properties.name)] ? markedOpacity : 1;
-
-  let line = new maptalks.LineString([[x,y,0],[x,y,z]], { symbol: { lineOpacity: opacity} });
-  layers.lines = layers.lines||[];
-  layers.lines.push(line);
-  line.feature = feature;
-
-/*
-  var symbol = {
-    url: 'js/untitled.glb',
-    rotation: [0, 0, 0],
-    //fixSizeOnZoom: 0,
-    //modelHeight: 5000,
-    scaleX: 1000,
-    scaleY: 1000,
-    scaleZ: 5000,
-  };
-
-  layers.gltf = layers.gltf || [];
-  let gltf = new maptalks.GLTFMarker([x,y,z], { symbol: symbol});
-  layers.gltf.push(gltf);
-  gltf.feature = feature;
-*/
-
-  let marker = new maptalks.Marker([x,y,z], { symbol: getSymbol(feature, opacity) });
-  marker.feature = feature; // leaflet uses marker.feature after loading geojson
-  layers[t.group] = layers[t.group] || [];
-  layers[t.group].push(marker);
-
-  marker.setInfoWindow({autoCloseOn: 'click'})
-  //.on('dragend', onDragEnd)
-  .on('click', popupOnClick)
-  .on('contextmenu', e=> {
-    if (!mouseMoved) toggleMarked(e.target.feature.properties.name);
-  })
-
-  let title = t.title || feature.properties.type;
-
-  const tooltip = new maptalks.ui.ToolTip(`${title} (${translate(t.group)}) ${getSubtitle(feature)}`, {
-      showTimeout: 100, // Delay in milliseconds before showing the tooltip
-      dx: 10,           // X-offset from the geometry
-      dy: -10           // Y-offset from the geometry
-  });
-
-  tooltip.addTo(marker);
-
-  //if (t.type =='Inventory_Toothpin_C') console.log(feature);
-
-  icons[t.type] = iconData[t.icon];
-
-  counters[t.group] = counters[t.group] || {};
-  counters[t.group][t.type] = (counters[t.group][t.type] || 0) + 1;
-
-  if (t.group=='misc') { marker.hide(); line.hide();}
-
-  return marker;
-}
-
 function getBaseURL() {
   return window.location.href.replace(/#.*$/,'');
 }
@@ -442,6 +358,91 @@ function toggleMarked(id) {
   saveSettings();
 }
 
+function addMarker(feature, options) {
+  let t = getType(feature);
+
+  //if (t.group=='misc' || t.group=='actors') return;
+
+  let [x,y,z] = feature.geometry.coordinates;
+
+  z /= 4;
+
+  //console.log(feature.geometry.coordinates);
+
+  let getSymbol = function(feature,opacity=1) {
+    return {
+      //markerFile   : 'js/lib/maptalks-gl/images/1.png',
+      markerFile   : iconImages[t.icon] || iconImages['misc'],
+      markerWidth  : iconSize,
+      markerHeight : iconSize,
+      markerDx     : 0,
+      markerDy     : 0,//-Math.round(iconSize/2),
+      markerOpacity: opacity,
+      //markerVerticalAlignment: 'middle',
+    };
+  };
+
+  let [layers,counters,icons] = [options.layers, options.counters, options.icons];
+
+  let opacity = settings.markedItems[getBaseName(feature.properties.name)] ? markedOpacity : 1;
+
+  let line = new maptalks.LineString([[x,y,0],[x,y,z]], { symbol: { lineOpacity: opacity} });
+  layers.lines = layers.lines||[];
+  layers.lines.push(line);
+  line.feature = feature;
+
+/*
+  var symbol = {
+    url: 'js/untitled.glb',
+    rotation: [0, 0, 0],
+    //fixSizeOnZoom: 0,
+    //modelHeight: 5000,
+    scaleX: 1000,
+    scaleY: 1000,
+    scaleZ: 5000,
+  };
+
+  layers.gltf = layers.gltf || [];
+  let gltf = new maptalks.GLTFMarker([x,y,z], { symbol: symbol});
+  layers.gltf.push(gltf);
+  gltf.feature = feature;
+*/
+
+  let marker = new maptalks.Marker([x,y,z], { symbol: getSymbol(feature, opacity) });
+  marker.feature = feature; // leaflet uses marker.feature after loading geojson
+  layers[t.group] = layers[t.group] || [];
+  layers[t.group].push(marker);
+
+  marker.setInfoWindow({autoCloseOn: 'click'})
+  //.on('dragend', onDragEnd)
+  .on('click', popupOnClick)
+  .on('contextmenu', e=> {
+    if (!mouseMoved) toggleMarked(e.target.feature.properties.name);
+  })
+
+  let title = t.title || feature.properties.type;
+
+  const tooltip = new maptalks.ui.ToolTip(`${title} (${translate(t.group)}) ${getSubtitle(feature)}`, {
+      showTimeout: 100, // Delay in milliseconds before showing the tooltip
+      dx: 10,           // X-offset from the geometry
+      dy: -10           // Y-offset from the geometry
+  });
+
+  tooltip.addTo(marker);
+
+  //if (t.type =='Inventory_Toothpin_C') console.log(feature);
+
+  icons[t.type] = iconData[t.icon];
+
+  counters[t.group] = counters[t.group] || {};
+  counters[t.group][t.type] = (counters[t.group][t.type] || 0) + 1;
+
+  if (t.group=='misc') { marker.hide(); line.hide();}
+
+  return marker;
+}
+
+
 function loadMarkersBatched(features, options) {
   const batchSize = 1000;
   let currentIndex = 0;
@@ -463,6 +464,16 @@ function loadMarkersBatched(features, options) {
 
       if (o.target) {
         batch.push(addMarker({...feature, geometry: {coordinates: o.target}, properties: {name: o.name +':target', type: '_Launch_Target_C'}}, options));
+
+        /*
+        let [x,y,z] = feature.geometry.coordinates;
+        let line = new maptalks.LineString([[x,y,z],o.target], { symbol: { lineOpacity: 1.0} });
+        let layers = options.layers;
+        layers.lines = layers.lines||[];
+        layers.lines.push(line);
+        line.feature = feature;
+        */
+
       }
 
     }
@@ -754,7 +765,9 @@ function loadMap(mapId) {
       zoomLevel : false,
     },
     doubleClickZoom: false,
+
     //heightFactor: 0.01, // optional (doesn't really work? messes up infowindow)
+
     enableAltitude: false,
 
     baseLayer: new maptalks.GroupTileLayer('baseLayers', 
