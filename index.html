@@ -557,6 +557,7 @@ function addMarkers(markers, options) {
     //searchControl._input.value = 'title:'+filterOptions.title;
   }
 
+
   mapParam = {};
 
   saveSettings();
@@ -592,7 +593,7 @@ function filterItems(options) {
 
   let [type, group, title, text] = [options.type, options.group, options.title, options.text];
 
-  //console.log('filtering by', type, group, text);
+  console.log('filtering by', options);
 
   if (!group && !type && !title && !text) text = ''; // select all
 
@@ -612,23 +613,19 @@ function filterItems(options) {
       if (marker.feature) {
         let t = getType(marker.feature);
         let o = marker.feature.properties;
-        res = text =='' || t.type == type || t.group==group || o.name==title;
+        res = t.type == type || t.group==group || o.name==title || text=='';
 
-        if (title && t.title) {
+        if (!res && title && t.title) {
           let src = t.title.toLowerCase();
           let term = title.toLowerCase();
           res = src==term || src==term.replaceAll('_',' ');
         }
 
-        let mask = {}
-
+        let mask = {};
         if (!res && terms.length) {
           for (let s of [t.type, t.title, ...Object.values(o), ...Object.keys(o)]) {
-
             if (!s) continue;
-
             s = String(s).toLowerCase();
-
             for (const term of terms) {
               if (mask[term]) continue;
               if (s.includes(term)) {
@@ -636,9 +633,9 @@ function filterItems(options) {
               }
             }
           }
-
           res = terms.every(term=>mask[term]);
         }
+
       }
 
       if (res) {
