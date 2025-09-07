@@ -126,8 +126,10 @@
 
   "CodeOrderUnlock_C": {"icon":"lock_grey","group":"misc"},
 
+
   "_LaunchComponentTarget_C": {"icon":"launch_target","group":"teleports","title":"Launch Target"},
   "GuardVolume_C": {"icon":"guard_volume","group":"teleports","title":"Guard Volume"},
+  "LaunchVolume_C": {"icon":"launch_volume","group":"teleports","title":"Launch Volume"},
 
 
   "BP_A3_StrengthQuest_C": {"icon":"strong","group":"actors","title":"Strength Quest"},
