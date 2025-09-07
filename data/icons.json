@@ -185,5 +185,6 @@
   "fire_simple": {"class":"fa fa-fire-flame-simple","bg":"orange"},
   "lock_grey": {"class":"fa fa-lock","bg":"grey"},
 
+  "guard_volume": {"class":"fa fa-cube","bg":"red"},
   "launch_target": {"class":"fa fa-circle-chevron-down","bg":"dodgerblue"}
 }

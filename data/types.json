@@ -47,7 +47,7 @@
   "FloppyDisk_SavePoint_C": {"icon":"disk","group":"items","title":"Floppy Disk"},
   "ShopEgg_C": {"icon":"egg","group":"collectible","title":"Egg"},
   "Egg_Opener_C": {"icon":"tool","group":"items","title":"Egg Opener"},
-  "JumpTargetAssist_C": {"icon":"jumppad_target","group":"teleports","title":"Jump Target"},
+  "JumpTargetAssist_C": {"icon":"jumppad_target","group":"misc","title":"Jump Target Assist"},
   "AAABatterySlot_C": {"icon":"battery_slot","group":"items","title":"AAA Battery Slot"},
   "NFCSimReader_C": {"icon":"sim_reader","group":"items","title":"NFC SIM Reader"},
   "PuzzleCloud_C": {"icon":"cloud","group":"collectible","title":"Puzzle Cloud", "material":{"CloudPurple": "_PuzzleCloud_C_Main"}},
@@ -127,7 +127,7 @@
   "CodeOrderUnlock_C": {"icon":"lock_grey","group":"misc"},
 
   "_LaunchComponentTarget_C": {"icon":"launch_target","group":"teleports","title":"Launch Target"},
-  "GuardVolume_C": {"icon":"trigger_volume","group":"teleports","title":"Guard Volume"},
+  "GuardVolume_C": {"icon":"guard_volume","group":"teleports","title":"Guard Volume"},
 
 
   "BP_A3_StrengthQuest_C": {"icon":"strong","group":"actors","title":"Strength Quest"},
