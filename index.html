@@ -358,14 +358,16 @@ function toggleMarked(id) {
   saveSettings();
 }
 
+function applyHeightFactor(c) {
+  return [c[0], c[1], c[2]/4];
+}
+
 function addMarker(feature, options) {
   let t = getType(feature);
 
   //if (t.group=='misc' || t.group=='actors') return;
 
-  let [x,y,z] = feature.geometry.coordinates;
-
-  z /= 4;
+  let [x,y,z] = applyHeightFactor(feature.geometry.coordinates);
 
   //console.log(feature.geometry.coordinates);
 
@@ -465,14 +467,14 @@ function loadMarkersBatched(features, options) {
       if (o.target) {
         batch.push(addMarker({...feature, geometry: {coordinates: o.target}, properties: {name: o.name +':target', type: '_Launch_Target_C'}}, options));
 
-        /*
-        let [x,y,z] = feature.geometry.coordinates;
-        let line = new maptalks.LineString([[x,y,z],o.target], { symbol: { lineOpacity: 1.0} });
+        let start = applyHeightFactor(feature.geometry.coordinates);
+        let end = applyHeightFactor(o.target);
+
+        let line = new maptalks.LineString([start, end], { symbol: { lineOpacity: 0.5, lineColor: '#f00', lineWidth: 4 } });
         let layers = options.layers;
         layers.lines = layers.lines||[];
         layers.lines.push(line);
         line.feature = feature;
-        */
 
       }
 
