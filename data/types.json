@@ -370,6 +370,7 @@
 
   "CodeOrderUnlock_C": {"icon":"lock_grey","group":"misc"},
 
+  "LaunchPrincess_C": {"icon":"launch_volume","group":"teleports","title":"Launch Princess"},
   "_LaunchComponentTarget_C": {"icon":"launch_target","group":"teleports","title":"Launch Target"},
   "_RubberBandLTarget_C": {"icon":"band_target","group":"teleports","title":"Rubber Band Target"},
   "GuardVolume_C": {"icon":"guard_volume","group":"teleports","title":"Guard Volume"},
