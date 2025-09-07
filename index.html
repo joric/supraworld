@@ -177,6 +177,11 @@ function toggleClass(e, c) { if (e.classList.contains(c)) { e.classList.remove(c
 function toggleNav(e) { let input = document.querySelector('#search-input'); toggleClass(e.parentElement, 'closed') ? input.blur() : input.focus();}
 function toggleVisibility(a) { [].forEach.call(a, function(e) { toggleClass(document.querySelector(e), 'collapsed'); }) }
 
+function getColor(typeName){
+  let color = iconData[ typeData[ typeName ]?.icon ]?.bg;
+  return color;
+}
+
 function getType(feature) {
   let type = feature.properties.type;
   let prop = typeData[type];
@@ -467,7 +472,7 @@ function loadMarkersBatched(features, options) {
 
       if (o.target) {
 
-        let color = o.type.includes('RubberBand') ? typeData['RubberBand_C']?.bg : typeData['Jumppad_C']?.bg;
+        let color = o.type.includes('RubberBand') ? getColor('RubberBand_C') : getColor('Jumppad_C');
 
         let type = o.type.includes('RubberBand') ? '_RubberBandLTarget_C'  : '_LaunchComponentTarget_C';
 
