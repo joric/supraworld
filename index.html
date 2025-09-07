@@ -348,7 +348,7 @@ function toggleMarked(id) {
   let groupLayer = map.getLayer('GroupGLLayer');
   for (const layer of groupLayer.getLayers()) {
     for (marker of layer._geoList) {
-      if (marker.feature.properties.name == name || marker.feature.properties.name == name+':spawns') {
+      if (getBaseName(marker.feature.properties.name) == name) {
         let opacity = settings.markedItems[name] ? markedOpacity : 1;
         marker.updateSymbol({markerOpacity: opacity, lineOpacity: opacity });
       }
@@ -474,8 +474,9 @@ function loadMarkersBatched(features, options) {
 
         let start = applyHeightFactor(feature.geometry.coordinates);
         let end = applyHeightFactor(o.target);
+        let opacity = settings.markedItems[o.name] ? markedOpacity : 1;
 
-        let line = new maptalks.LineString([start, end], { symbol: { lineOpacity: 1, lineColor: color, lineWidth: 3 } });
+        let line = new maptalks.LineString([start, end], { symbol: { lineOpacity: opacity, lineColor: color, lineWidth: 3 } });
         let layers = options.layers;
         layers.lines = layers.lines||[];
         layers.lines.push(line);
