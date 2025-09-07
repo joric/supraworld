@@ -126,7 +126,7 @@
 
   "CodeOrderUnlock_C": {"icon":"lock_grey","group":"misc"},
 
-  "_Launch_Target_C": {"icon":"launch_target","group":"teleports","title":"Launch Target"},
+  "_LaunchComponentTarget_C": {"icon":"launch_target","group":"teleports","title":"Launch Target"},
   "GuardVolume_C": {"icon":"trigger_volume","group":"teleports","title":"Guard Volume"},
 
 

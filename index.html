@@ -465,7 +465,7 @@ function loadMarkersBatched(features, options) {
       }
 
       if (o.target) {
-        batch.push(addMarker({...feature, geometry: {coordinates: o.target}, properties: {name: o.name +':target', type: '_Launch_Target_C'}}, options));
+        batch.push(addMarker({...feature, geometry: {coordinates: o.target}, properties: {name: o.name +':target', type: '_LaunchComponentTarget_C'}}, options));
 
         let start = applyHeightFactor(feature.geometry.coordinates);
         let end = applyHeightFactor(o.target);
