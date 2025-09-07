@@ -556,7 +556,15 @@ function addMarkers(markers, options) {
 
   function toggleGroup(group) {
     searchControl._input.value='';
-    filterItems({group: group});
+
+    // check if group was already toggled - enable all groups
+    let options = parseSearchOptions(settings.filter);
+    if (options.group == group) {
+      filterItems({text:''});
+    } else {
+      filterItems({group: group});
+    }
+
     location.hash = '';
   }
 
