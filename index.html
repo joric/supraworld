@@ -467,7 +467,8 @@ function loadMarkersBatched(features, options) {
 
       if (o.target) {
 
-        let color = o.type.includes('RubberBand') ? 'palevioletred' : 'red';
+        let color = o.type.includes('RubberBand') ? typeData['RubberBand_C']?.bg : typeData['Jumppad_C']?.bg;
+
         let type = o.type.includes('RubberBand') ? '_RubberBandLTarget_C'  : '_LaunchComponentTarget_C';
 
         batch.push(addMarker({...feature, geometry: {coordinates: o.target}, properties: {name: o.name +':target', type: type}}, options));
