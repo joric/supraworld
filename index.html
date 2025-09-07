@@ -359,6 +359,7 @@ function toggleMarked(id) {
 }
 
 function applyHeightFactor(c) {
+  if (c.x) return [c.x, c.y, c.z/4];
   return [c[0], c[1], c[2]/4];
 }
 
@@ -470,7 +471,7 @@ function loadMarkersBatched(features, options) {
         let start = applyHeightFactor(feature.geometry.coordinates);
         let end = applyHeightFactor(o.target);
 
-        let line = new maptalks.LineString([start, end], { symbol: { lineOpacity: 0.5, lineColor: '#f00', lineWidth: 4 } });
+        let line = new maptalks.LineString([start, end], { symbol: { lineOpacity: 1, lineColor: '#f00', lineWidth: 3 } });
         let layers = options.layers;
         layers.lines = layers.lines||[];
         layers.lines.push(line);
