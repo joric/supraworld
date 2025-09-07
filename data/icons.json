@@ -187,5 +187,5 @@
 
   "guard_volume": {"class":"fa fa-person-military-pointing","bg":"red"},
   "launch_volume": {"class":"fa fa-cube","bg":"red"},
-  "launch_target": {"class":"fa fa-circle-chevron-down","bg":"dodgerblue"}
+  "launch_target": {"class":"fa fa-location-crosshairs","bg":"red"}
 }
