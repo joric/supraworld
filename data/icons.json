@@ -188,5 +188,6 @@
   "launch_volume": {"class":"fa fa-cube","bg":"red"},
   "launch_target": {"class":"fa fa-location-crosshairs","bg":"red"},
   "rubber_band": {"class":"fa fa-circle-chevron-up","bg":"palevioletred"},
-  "band_target": {"class":"fa fa-location-crosshairs","bg":"palevioletred"}
+  "band_target": {"class":"fa fa-location-crosshairs","bg":"palevioletred"},
+  "dash_launcher": {"class":"fa fa-person-running","bg":"red"}
 }
