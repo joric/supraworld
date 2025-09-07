@@ -94,7 +94,6 @@
   "PlaySound_C": {"icon":"sound","group":"misc","title":"Play Sound"},
   "Cable_C": {"icon":"cable","group":"misc","title":"Cable"},
   "FashionSlotComponent_C": {"icon":"fashion_slot","group":"misc","title":"Fashion Slot"},
-  "WobbleSpring_C": {"icon":"spring","group":"items","title":"Spring"},
   "Inventory_Walk_C": {"icon":"walk","group":"inventory","title":"Walk"},
   "Inventory_Toothpin_Dart_C": {"icon":"toothpin_dart","group":"inventory","title":"Toothpin Dart"},
   "Inventory_LaserWalk_C": {"icon":"laser_walk","group":"inventory","title":"Laser Walk", "act": 2},
@@ -128,8 +127,17 @@
 
 
   "_LaunchComponentTarget_C": {"icon":"launch_target","group":"teleports","title":"Launch Target"},
+  "_RubberBandLTarget_C": {"icon":"band_target","group":"teleports","title":"Rubber Band Target"},
+
   "GuardVolume_C": {"icon":"guard_volume","group":"teleports","title":"Guard Volume"},
   "LaunchVolume_C": {"icon":"launch_volume","group":"teleports","title":"Launch Volume"},
+
+  "RubberBand_CustomDeform_C": {"icon":"rubber_band","group":"teleports","title":"Custom Rubber Band"},
+
+
+  "EncroachVolume_C": {"icon":"launch_volume","group":"teleports","title":"Encroach Volume"},
+
+  "WobbleSpring_C": {"icon":"spring","group":"teleports","title":"Spring"},
 
 
   "BP_A3_StrengthQuest_C": {"icon":"strong","group":"actors","title":"Strength Quest"},

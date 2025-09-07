@@ -466,12 +466,16 @@ function loadMarkersBatched(features, options) {
       }
 
       if (o.target) {
-        batch.push(addMarker({...feature, geometry: {coordinates: o.target}, properties: {name: o.name +':target', type: '_LaunchComponentTarget_C'}}, options));
+
+        let color = o.type.includes('RubberBand') ? 'palevioletred' : 'red';
+        let type = o.type.includes('RubberBand') ? '_RubberBandLTarget_C'  : '_LaunchComponentTarget_C';
+
+        batch.push(addMarker({...feature, geometry: {coordinates: o.target}, properties: {name: o.name +':target', type: type}}, options));
 
         let start = applyHeightFactor(feature.geometry.coordinates);
         let end = applyHeightFactor(o.target);
 
-        let line = new maptalks.LineString([start, end], { symbol: { lineOpacity: 1, lineColor: '#f00', lineWidth: 3 } });
+        let line = new maptalks.LineString([start, end], { symbol: { lineOpacity: 1, lineColor: color, lineWidth: 3 } });
         let layers = options.layers;
         layers.lines = layers.lines||[];
         layers.lines.push(line);

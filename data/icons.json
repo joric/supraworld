@@ -167,7 +167,7 @@
   "led": {"class":"fa fa-lightbulb","bg":"green"},
   "cable": {"class":"fa fa-bolt-lightning","bg":"black"},
   "fashion_slot": {"class":"fa fa-hat-cowboy","bg":"grey"},
-  "spring": {"class":"fa fa-spiral","bg":"dodgerblue"},
+  "spring": {"class":"fa fa-spiral","bg":"red"},
   "cork": {"class":"fa fa-prescription-bottle","bg":"tan"},
   "clover": {"class":"fa fa-seedling","bg":"green"},
   "cap": {"class":"fa fa-hockey-puck","bg":"green"},
@@ -187,5 +187,6 @@
 
   "guard_volume": {"class":"fa fa-person-military-pointing","bg":"red"},
   "launch_volume": {"class":"fa fa-cube","bg":"red"},
-  "launch_target": {"class":"fa fa-location-crosshairs","bg":"red"}
+  "launch_target": {"class":"fa fa-location-crosshairs","bg":"red"},
+  "band_target": {"class":"fa fa-location-crosshairs","bg":"palevioletred"}
 }
