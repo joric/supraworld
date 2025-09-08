@@ -302,7 +302,6 @@
   "JustTalkActor_C": {"icon":"npc","group":"NPCs","title":"Just Talk Actor"},
   "HayGuy_C": {"icon":"guy","group":"NPCs","title":"Hay Guy"},
   "FloatingRaft_C": {"icon":"raft","group":"items","title":"Floating Raft"},
-  "RubberBand_C": {"icon":"rubber_band","group":"teleports","title":"Rubber Band"},
   "HealthDispenser_C": {"icon":"health_dispencer","group":"items","title":"Health Dispenser"},
   "Gumball_Machine_C": {"icon":"gumball_machine","group":"items","title":"Gumball Machine"},
   "PressurePlate_C": {"icon":"button_big","group":"items","title":"Pressure Plate"},
@@ -370,13 +369,18 @@
 
   "CodeOrderUnlock_C": {"icon":"lock_grey","group":"misc"},
 
+  "_LaunchTarget_C": {"icon":"launch_target","group":"teleports","title":"Launch Target"},
+
+  "RubberBand_C": {"icon":"rubber_band","group":"teleports","title":"Rubber Band"},
+  "_RubberBandTarget_C": {"icon":"band_target","group":"teleports","title":"Rubber Band Target"},
+
+  "WobbleSpring_C": {"icon":"spring","group":"items","title":"Spring"},
+  "_SpringTarget_C": {"icon":"launch_target","group":"items","title":"Spring Target"},
+
   "LaunchPrincess_C": {"icon":"launch_volume","group":"teleports","title":"Launch Princess"},
-  "_LaunchComponentTarget_C": {"icon":"launch_target","group":"teleports","title":"Launch Target"},
-  "_RubberBandLTarget_C": {"icon":"band_target","group":"teleports","title":"Rubber Band Target"},
   "GuardVolume_C": {"icon":"guard_volume","group":"teleports","title":"Guard Volume"},
   "LaunchVolume_C": {"icon":"launch_volume","group":"teleports","title":"Launch Volume"},
   "RubberBand_CustomDeform_C": {"icon":"rubber_band","group":"teleports","title":"Custom Rubber Band"},
   "EncroachVolume_C": {"icon":"launch_volume","group":"teleports","title":"Encroach Volume"},
-  "WobbleSpring_C": {"icon":"spring","group":"teleports","title":"Spring"},
   "DashLauncher_C": {"icon":"dash_launcher","group":"teleports","title":"Dash Launcher"}
 }
