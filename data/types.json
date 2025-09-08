@@ -128,7 +128,6 @@
   "DeadHero_C": {"icon":"hero_placeholder","group":"collectible","title":"Dead Hero"},
   "DestroyablePots_C": {"icon":"pots","group":"collectible","title":"Destroyable Pots"},
   "GoldBlock_C": {"icon":"misc","group":"items","title":"Gold Block"},
-  "Jumppad_C": {"icon":"jumppad","group":"teleports","title":"Jump Pad"},
   "Jumppillow_C": {"icon":"misc","group":"misc","title":"Bouncy Mattress"},
   "LotsOfCoins10_C": {"icon":"coinStash","group":"coins","title":"10 Coins"},
   "LotsOfCoins15_C": {"icon":"coinStash","group":"coins","title":"15 Coins"},
@@ -360,27 +359,42 @@
   "Inventory_SpongeSuit_C": {"icon":"sponge_suit","group":"inventory","title":"Sponge Suit"},
   "Inventory_Toothpin_C": {"icon":"toothpin","group":"inventory","title":"Toothpin"},
 
+  "PaintTube_C": {"icon":"paint_tube","group":"items","title":"Paint Tube"},
+  "PaintBottle_C": {"icon":"paint_bottle","group":"items","title":"Paint Bottle"},
+
   "ToothPinSnap_C": {"icon":"toothpin_snap","group":"misc","title":"Toothpin Snap"},
   "ShopItemAbility_MindPossession_C": {"icon":"brain","group":"inventory","title":"Mind Posession"},
   "ShopItemAbility_MindReading_C": {"icon":"thought","group":"inventory","title":"Mind Reading"},
 
-  "ToyCharacterBase_C": {"icon":"npc","group":"misc", "name": {"ToyCharacterBase_C_UAID_ACB480ECFC84078A02_1938760018":"_ToyCharacterBase_C_Failini"}},
-  "_ToyCharacterBase_C_Failini": {"icon":"character","group":"NPCs","title":"The Great Failini"},
+  "ToyCharacterBase_C": {"icon":"npc","group":"misc", "name": {"ToyCharacterBase_C_UAID_ACB480ECFC84078A02_1938760018":"ToyCharacterBase_C:failini"}},
+  "ToyCharacterBase_C:failini": {"icon":"npc","group":"misc"},
 
   "CodeOrderUnlock_C": {"icon":"lock_grey","group":"misc"},
 
-  "_LaunchTarget_C": {"icon":"launch_target","group":"teleports","title":"Launch Target"},
+  "Jumppad_C": {"icon":"jumppad","group":"teleports","title":"Jump Pad"},
+  "Jumppad_C:target": {"icon":"jumppad_target","group":"teleports","title":"Jump Pad Target"},
 
   "RubberBand_C": {"icon":"rubber_band","group":"teleports","title":"Rubber Band"},
-  "_RubberBandTarget_C": {"icon":"band_target","group":"teleports","title":"Rubber Band Target"},
+  "RubberBand_C:target": {"icon":"rubber_band_target","group":"teleports","title":"Rubber Band Target"},
 
-  "WobbleSpring_C": {"icon":"spring","group":"items","title":"Spring"},
-  "_SpringTarget_C": {"icon":"launch_target","group":"items","title":"Spring Target"},
+  "WobbleSpring_C": {"icon":"spring","group":"teleports","title":"Spring"},
+  "WobbleSpring_C:target": {"icon":"jumppad_target","group":"teleports","title":"Spring Target"},
 
   "LaunchPrincess_C": {"icon":"launch_volume","group":"teleports","title":"Launch Princess"},
+  "LaunchPrincess_C:target": {"icon":"jumppad_target","group":"teleports","title":"Teleport Target"},
+
   "GuardVolume_C": {"icon":"guard_volume","group":"teleports","title":"Guard Volume"},
+  "GuardVolume_C:target": {"icon":"jumppad_target","group":"teleports","title":"Teleport Target"},
+
   "LaunchVolume_C": {"icon":"launch_volume","group":"teleports","title":"Launch Volume"},
+  "LaunchVolume_C:target": {"icon":"jumppad_target","group":"teleports","title":"Teleport Target"},
+
   "RubberBand_CustomDeform_C": {"icon":"rubber_band","group":"teleports","title":"Custom Rubber Band"},
+  "RubberBand_CustomDeform_C:target": {"icon":"rubber_band_target","group":"teleports","title":"Teleport Target"},
+
   "EncroachVolume_C": {"icon":"launch_volume","group":"teleports","title":"Encroach Volume"},
-  "DashLauncher_C": {"icon":"dash_launcher","group":"teleports","title":"Dash Launcher"}
+  "EncroachVolume_C:target": {"icon":"jumppad_target","group":"teleports","title":"Teleport Target"},
+
+  "DashLauncher_C": {"icon":"dash_launcher","group":"teleports","title":"Dash Launcher"},
+  "DashLauncher_C:target": {"icon":"jumppad_target","group":"teleports","title":"Teleport Target"}
 }

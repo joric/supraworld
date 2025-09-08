@@ -338,7 +338,7 @@ function popupOnClick(e) {
 
 
 function getBaseName(name) {
-  return name.split(':').shift();
+  return name && name.split(':').shift();
 }
 
 function toggleMarked(id) {
@@ -443,7 +443,10 @@ function addMarker(feature, options) {
   icons[t.type] = iconData[t.icon];
 
   counters[t.group] = counters[t.group] || {};
-  counters[t.group][t.type] = (counters[t.group][t.type] || 0) + 1;
+
+  if (getBaseName(t.type)==t.type) {
+    counters[t.group][t.type] = (counters[t.group][t.type] || 0) + 1;
+  }
 
   if (t.group=='misc') { marker.hide(); line.hide();}
 
@@ -471,23 +474,13 @@ function loadMarkersBatched(features, options) {
       }
 
       if (o.target) {
-
-        let type = '_LaunchTarget_C'
-        if (o.type.includes('RubberBand')) {
-          type = '_RubberBandTarget_C';
-        } else if (o.type.includes('Spring')) {
-          type = '_SpringTarget_C';
-        }
-
-        let color = getColor(o.type);
-
-        batch.push(addMarker({...feature, geometry: {coordinates: o.target}, properties: {name: o.name +':target', type: type}}, options));
+        batch.push(addMarker({...feature, geometry: {coordinates: o.target}, properties: {name: o.name +':target', type: o.type + ':target' }}, options));
 
         let start = applyHeightFactor(feature.geometry.coordinates);
         let end = applyHeightFactor(o.target);
         let opacity = settings.markedItems[o.name] ? markedOpacity : 1;
 
-        let line = new maptalks.LineString([start, end], { symbol: { lineOpacity: opacity, lineColor: color, lineWidth: 3 } });
+        let line = new maptalks.LineString([start, end], { symbol: { lineOpacity: opacity, lineColor: getColor(o.type), lineWidth: 3 } });
         let layers = options.layers;
         layers.lines = layers.lines||[];
         layers.lines.push(line);
@@ -657,7 +650,7 @@ function filterItems(options) {
       if (marker.feature) {
         let t = getType(marker.feature);
         let o = marker.feature.properties;
-        res = t.type == type || t.group==group || o.name==title || text=='';
+        res = getBaseName(t.type) == getBaseName(type) || t.group==group || o.name==title || text=='';
 
         if (!res && title && t.title) {
           let src = t.title.toLowerCase();
