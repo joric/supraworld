@@ -434,9 +434,9 @@ function addMarker(feature, options) {
   let title = t.title || feature.properties.type;
 
   let subtitle = getSubtitle(feature);
-  if (subtitle) subtitle = '- ' + subtitle;
+  if (subtitle) subtitle = ' - ' + subtitle;
 
-  const tooltip = new maptalks.ui.ToolTip(`${translate(t.group)} / ${title} ${subtitle}`, {
+  const tooltip = new maptalks.ui.ToolTip(`${title} (${translate(t.group)})${subtitle}`, {
       showTimeout: 100, // Delay in milliseconds before showing the tooltip
       dx: 10,           // X-offset from the geometry
       dy: -10           // Y-offset from the geometry
