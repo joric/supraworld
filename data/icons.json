@@ -194,7 +194,7 @@
   "launch_target": {"class":"fa fa-location-crosshairs","bg":"grey"},
 
   "princess_volume": {"class":"fa fa-cube","bg":"orchid"},
-  "princess_target": {"class":"fa fa-location-crosshairs","bg":"orchid"},
+  "princess_target": {"class":"fa fa-street-view","bg":"orchid"},
 
   "rubber_band": {"class":"fa fa-circle-chevron-up","bg":"palevioletred"},
   "rubber_band_target": {"class":"fa fa-street-view","bg":"palevioletred"},

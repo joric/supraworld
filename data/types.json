@@ -381,7 +381,7 @@
   "WobbleSpring_C:target": {"icon":"spring_target","group":"teleports","title":"Jump Target"},
 
   "LaunchPrincess_C": {"icon":"princess_volume","group":"teleports","title":"Launch Princess"},
-  "LaunchPrincess_C:target": {"icon":"princess_target","group":"teleports","title":"Jump Target"},
+  "LaunchPrincess_C:target": {"icon":"princess_target","group":"teleports","title":"Princess Target"},
 
   "GuardVolume_C": {"icon":"guard_volume","group":"teleports","title":"Guard Volume"},
   "GuardVolume_C:target": {"icon":"guard_target","group":"teleports","title":"Guard Target"},
