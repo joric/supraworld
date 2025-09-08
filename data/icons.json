@@ -184,13 +184,23 @@
   "paint_tube": {"class":"fa fa-paintbrush","bg":"red"},
   "paint_bottle": {"class":"fa fa-paint-roller","bg":"red"},
 
-  "spring": {"class":"fa fa-spiral","bg":"red"},
+  "spring": {"class":"fa fa-spiral","bg":"dodgerblue"},
+  "spring_target": {"class":"fa fa-street-view","bg":"dodgerblue"},
+
   "jumppad": {"class":"fa fa-circle-chevron-up","bg":"red"},
   "jumppad_target": {"class":"fa fa-street-view","bg":"red"},
-  "guard_volume": {"class":"fa fa-person-military-pointing","bg":"red"},
-  "launch_volume": {"class":"fa fa-cube","bg":"red"},
-  "launch_target": {"class":"fa fa-street-view","bg":"red"},
+
+  "launch_volume": {"class":"fa fa-cube","bg":"grey"},
+  "launch_target": {"class":"fa fa-location-crosshairs","bg":"grey"},
+
+  "princess_volume": {"class":"fa fa-cube","bg":"orchid"},
+  "princess_target": {"class":"fa fa-location-crosshairs","bg":"orchid"},
+
   "rubber_band": {"class":"fa fa-circle-chevron-up","bg":"palevioletred"},
   "rubber_band_target": {"class":"fa fa-street-view","bg":"palevioletred"},
+
+  "guard_volume": {"class":"fa fa-person-military-pointing","bg":"red"},
+  "guard_target": {"class":"fa fa-location-crosshairs","bg":"red"},
+
   "dash_launcher": {"class":"fa fa-person-running","bg":"red"}
 }

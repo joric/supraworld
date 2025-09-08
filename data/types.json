@@ -378,22 +378,22 @@
   "RubberBand_C:target": {"icon":"rubber_band_target","group":"teleports","title":"Jump Target"},
 
   "WobbleSpring_C": {"icon":"spring","group":"teleports","title":"Spring"},
-  "WobbleSpring_C:target": {"icon":"jumppad_target","group":"teleports","title":"Jump Target"},
+  "WobbleSpring_C:target": {"icon":"spring_target","group":"teleports","title":"Jump Target"},
 
-  "LaunchPrincess_C": {"icon":"launch_volume","group":"teleports","title":"Launch Princess"},
-  "LaunchPrincess_C:target": {"icon":"jumppad_target","group":"teleports","title":"Jump Target"},
+  "LaunchPrincess_C": {"icon":"princess_volume","group":"teleports","title":"Launch Princess"},
+  "LaunchPrincess_C:target": {"icon":"princess_target","group":"teleports","title":"Jump Target"},
 
   "GuardVolume_C": {"icon":"guard_volume","group":"teleports","title":"Guard Volume"},
-  "GuardVolume_C:target": {"icon":"jumppad_target","group":"teleports","title":"Jump Target"},
+  "GuardVolume_C:target": {"icon":"guard_target","group":"teleports","title":"Guard Target"},
 
   "LaunchVolume_C": {"icon":"launch_volume","group":"teleports","title":"Launch Volume"},
-  "LaunchVolume_C:target": {"icon":"jumppad_target","group":"teleports","title":"Jump Target"},
+  "LaunchVolume_C:target": {"icon":"launch_target","group":"teleports","title":"Launch Target"},
 
   "RubberBand_CustomDeform_C": {"icon":"rubber_band","group":"teleports","title":"Custom Rubber Band"},
   "RubberBand_CustomDeform_C:target": {"icon":"rubber_band_target","group":"teleports","title":"Jump Target"},
 
   "EncroachVolume_C": {"icon":"launch_volume","group":"teleports","title":"Encroach Volume"},
-  "EncroachVolume_C:target": {"icon":"jumppad_target","group":"teleports","title":"Jump Target"},
+  "EncroachVolume_C:target": {"icon":"launch_target","group":"teleports","title":"Encroach Target"},
 
   "DashLauncher_C": {"icon":"dash_launcher","group":"teleports","title":"Dash Launcher"},
   "DashLauncher_C:target": {"icon":"jumppad_target","group":"teleports","title":"Jump Target"}
