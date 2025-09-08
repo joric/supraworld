@@ -202,5 +202,5 @@
   "guard_volume": {"class":"fa fa-person-military-pointing","bg":"red"},
   "guard_target": {"class":"fa fa-location-crosshairs","bg":"red"},
 
-  "dash_launcher": {"class":"fa fa-person-running","bg":"red"}
+  "dash_launcher": {"class":"fa fa-bolt","bg":"red"}
 }
