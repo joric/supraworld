@@ -258,7 +258,7 @@ function getSubtitle(feature) {
     if (o.progression) title += ' (' + o.progression.replace('Supraworld.Story.','') + ')';
   }
 
-  if (o.abilities) title += ' (' + (o.abilities.map(s=>(s+'').split('.').pop()).join(',')) +')';
+  if (o.abilities) title += ' [' + (o.abilities.map(s=>(s+'').split('.').pop()).join(',')) +']';
 
   if (o.hidden===true || o.exists===false) title +=' (Hidden)';
 
