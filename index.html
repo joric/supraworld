@@ -35,6 +35,10 @@
   <script src="../../src/controls/markers-control/markers-control.js"></script>
 </template>
 
+<script src="js/three-onlymath.min.js"></script>
+<script src="js/FModelReader.js"></script>
+<script src="js/simplify.js"></script>
+
 <template id="popup-template">
   <div id="popup" class="popup">
     <div class="popup-content-wrapper">
@@ -60,15 +64,12 @@
   </div>
 </template>
 
+</head>
+<body>
+
 <script>
 document.head.appendChild(document.getElementById(location.protocol === 'file:' ? 'local' : 'remote').content.cloneNode(true));
 </script>
-
-<script src="js/three-onlymath.min.js"></script>
-<script src="js/FModelReader.js"></script>
-
-</head>
-<body>
 
 <div tabindex=0 id="map"></div>
 <div class="controls-topleft">
@@ -453,6 +454,26 @@ function addMarker(feature, options) {
   return marker;
 }
 
+function parabola(start, end, maxHeight = null, steps = 50) {
+  const [x0, y0, z0] = start;
+  const [x1, y1, z1] = end;
+  const dx = x1 - x0;
+  const dy = y1 - y0;
+  const horizontalDistance = Math.sqrt(dx * dx + dy * dy);
+  const baseHeight = Math.max(z0, z1);
+  if (maxHeight === null) maxHeight = baseHeight + horizontalDistance / 8;
+  else maxHeight = Math.max(maxHeight, baseHeight + 0.001);
+  const points = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const x = x0 + dx * t;
+    const y = y0 + dy * t;
+    const z = z0 * (1 - t) + z1 * t + 4 * (maxHeight - baseHeight) * t * (1 - t);
+    //points.push([x, y, z]);
+    points.push({x:x, y:y, z:z}); // needed for simplify
+  }
+  return points;
+}
 
 function loadMarkersBatched(features, options) {
   const batchSize = 1000;
@@ -480,7 +501,13 @@ function loadMarkersBatched(features, options) {
         let end = applyHeightFactor(o.target);
         let opacity = settings.markedItems[o.name] ? markedOpacity : 1;
 
-        let line = new maptalks.LineString([start, end], { symbol: { lineOpacity: opacity, lineColor: getColor(o.type), lineWidth: 3 } });
+
+        let points = parabola(start, end);
+        points = simplify(points, 10);
+
+        let line = new maptalks.LineString(points, { symbol: { lineOpacity: opacity, lineColor: getColor(o.type), lineWidth: 3 } });
+
+
         let layers = options.layers;
         layers.lines = layers.lines||[];
         layers.lines.push(line);
