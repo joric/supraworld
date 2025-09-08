@@ -366,8 +366,8 @@
   "ShopItemAbility_MindPossession_C": {"icon":"brain","group":"inventory","title":"Mind Posession"},
   "ShopItemAbility_MindReading_C": {"icon":"thought","group":"inventory","title":"Mind Reading"},
 
-  "ToyCharacterBase_C": {"icon":"npc","group":"misc", "name": {"ToyCharacterBase_C_UAID_ACB480ECFC84078A02_1938760018":"ToyCharacterBase_C:failini"}},
-  "ToyCharacterBase_C:failini": {"icon":"npc","group":"misc"},
+  "ToyCharacterBase_C": {"icon":"npc","group":"misc", "name": {"ToyCharacterBase_C_UAID_ACB480ECFC84078A02_1938760018":"ToyCharacterBase_C_failini"}},
+  "ToyCharacterBase_C_failini": {"icon":"character","group":"NPCs", "title": "The Great Failini"},
 
   "CodeOrderUnlock_C": {"icon":"lock_grey","group":"misc"},
 
