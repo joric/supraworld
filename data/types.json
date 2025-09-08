@@ -360,7 +360,7 @@
 
 
   "Smartphone_C": {"icon":"phone","group":"items","title":"Smartphone"},
-  "ResetButton_C": {"icon":"button","group":"items","title":"Pin Hole"},
+  "ResetButton_C": {"icon":"small_button","group":"items","title":"Pin Hole"},
 
   "PaintTube_C": {"icon":"paint_tube","group":"items","title":"Paint Tube"},
   "PaintBottle_C": {"icon":"paint_bottle","group":"items","title":"Paint Bottle"},

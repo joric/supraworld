@@ -182,6 +182,7 @@
   "lock_grey": {"class":"fa fa-lock","bg":"grey"},
 
   "phone": {"class":"fa fa-mobile","bg":"dodgerblue"},
+  "small_button": {"class":"fa fa-arrows-to-dot","bg":"grey"},
 
   "paint_tube": {"class":"fa fa-paintbrush","bg":"red"},
   "paint_bottle": {"class":"fa fa-paint-roller","bg":"red"},
