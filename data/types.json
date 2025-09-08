@@ -316,7 +316,6 @@
   "PresentBox_Lootpools_C": {"icon":"random_present","group":"collectible","title":"Random Loot"},
   "GearFan_C": {"icon":"fan","group":"items","title": "Gear Fan"},
   "SmallFan_C": {"icon":"fan","group":"items","title":"Small Fan"},
-  "Balloon_C": {"icon":"balloon","group":"items","title":"Balloon"},
   "SecretVolume_C": {"icon":"secret","group":"collectible","title":"Secret Area"},
   "GlowStar_C": {"icon":"star","group":"misc","title":"Glow Star"},
   "Nailscrew_C": {"icon":"screw","group":"misc","title":"Screw"},
@@ -359,6 +358,10 @@
   "Inventory_SpongeSuit_C": {"icon":"sponge_suit","group":"inventory","title":"Sponge Suit"},
   "Inventory_Toothpin_C": {"icon":"toothpin","group":"inventory","title":"Toothpin"},
 
+
+  "Smartphone_C": {"icon":"phone","group":"items","title":"Smartphone"},
+  "ResetButton_C": {"icon":"button","group":"items","title":"Pin Hole"},
+
   "PaintTube_C": {"icon":"paint_tube","group":"items","title":"Paint Tube"},
   "PaintBottle_C": {"icon":"paint_bottle","group":"items","title":"Paint Bottle"},
 
@@ -373,6 +376,9 @@
 
   "Jumppad_C": {"icon":"jumppad","group":"teleports","title":"Jump Pad"},
   "Jumppad_C:target": {"icon":"jumppad_target","group":"teleports","title":"Jump Target"},
+
+  "Balloon_C": {"icon":"balloon","group":"items","title":"Balloon"},
+  "Balloon_C:target": {"icon":"jumppad_target","group":"items","title":"Balloon Target"},
 
   "RubberBand_C": {"icon":"rubber_band","group":"teleports","title":"Rubber Band"},
   "RubberBand_C:target": {"icon":"rubber_band_target","group":"teleports","title":"Jump Target"},
