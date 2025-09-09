@@ -509,7 +509,7 @@ function loadMarkersBatched(features, options) {
 
 
         let points = parabola(start, end);
-        points = simplify(points, 10);
+        points = simplify(points, 5);
 
         let line = new maptalks.LineString(points, { symbol: { lineOpacity: opacity, lineColor: getColor(o.type), lineWidth: 3 } });
 

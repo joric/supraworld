@@ -147,7 +147,7 @@ function markerLoader(data) {
       if (p.Area && p.Area.TagName) prop.area = p.Area.TagName;
       if (p.ProgressionGroup &&  p.ProgressionGroup.TagName) prop.progression = p.ProgressionGroup.TagName;
 
-      if (((c = p.Color) || (c = p.Color_Initial) || (c = p.ButtonColor)) && typeof c === 'string') prop.color = c;
+      if (((c = p.Color) || (c = p.Color_Initial) || (c = p.ButtonColor) || (c = p.LiquidColor)) && typeof c === 'string') prop.color = c;
 
       const getString = t => t?.SourceString || (t && typeof t === 'object' && Object.values(t).map(getString).find(Boolean)) || null;
       if (p.CharacterTalk) prop.text = getString(p.CharacterTalk);
