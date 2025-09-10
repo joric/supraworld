@@ -264,6 +264,8 @@ function getSubtitle(feature) {
 
   if (o.abilities) title += ' [' + (o.abilities.map(s=>(s+'').split('.').pop()).join(',')) +']';
 
+  if (o.color) title += ' (' + o.color.split('::').pop() +')';
+
   if (o.hidden===true || o.exists===false) title +=' (Hidden)';
 
   return title
