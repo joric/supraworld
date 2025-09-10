@@ -836,7 +836,7 @@ function loadMap(mapId) {
     localData[id] = localData[id] || {};
     localData[id].markedItems = localData[id].markedItems || {};
     localData[id].activeLayers = localData[id].activeLayers || {'collectible':true};
-    localData[id].filter = localData[id].filter!==undefined ? localData[id].filter : 'group:collectible';
+    localData[id].filter = localData[id].filter!==undefined ? localData[id].filter : '';
     localData[id].activeItems = localData[id].activeItems || {'SecretVolume_C':true};
   }
 
