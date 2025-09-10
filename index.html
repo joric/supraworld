@@ -79,6 +79,8 @@ document.head.appendChild(document.getElementById(location.protocol === 'file:' 
     <div class="options-control-items">
       <input id="file" type='file' hidden/>
       <input id="game_file" type='file' hidden/>
+      <div id="show_all" class="options-control-item"><i class="fa fa-eye"></i> Show All Markers</div>
+      <div id="hide_all" class="options-control-item"><i class="fa fa-eye-slash"></i> Hide All Markers</div>
       <div id="save_data" class="options-control-item"><i class="fa fa-download"></i> Download Settings</div>
       <div id="load_data" class="options-control-item"><i class="fa fa-upload"></i> Upload Settings</div>
       <div id="reset_data" class="options-control-item"><i class="fa fa-xmark"></i> Reset Settings</div>
@@ -104,6 +106,7 @@ let dataPrefix = location.protocol === 'file:' ? '../supraland/' : 'https://jori
 let iconImages = {};
 let iconSize = 48;
 let markedOpacity = 0.33;
+let counters = {};
 
 let maps = {
   sw:  { 
@@ -284,10 +287,10 @@ function popupOnClick(e) {
   let id = (info.title||'').replaceAll(' ','_');
   let backlink = getMapURL(id);
 
-  popup.querySelector('#popup-title').innerHTML = `<a href="${backlink}" onclick="return filterItems({type:'${info.type}'})">${info.title}</a>`;
+  popup.querySelector('#popup-title').innerHTML = `<a href="${backlink}" onclick="return showItem('${info.type}')">${info.title}</a>`;
   popup.querySelector('#popup-title').title = backlink;
 
-  popup.querySelector('#popup-subtitle').innerHTML = `<a href="#group:${info.group}" onclick="return filterItems({group:'${info.group}'})">${translate(info.group)}</a>`;
+  popup.querySelector('#popup-subtitle').innerHTML = `<a href="#group:${info.group}" onclick="return showGroup('${info.group}')">${translate(info.group)}</a>`;
 
   popup.querySelector('#popup-note').textContent = getSubtitle(feature);
   popup.querySelector('#popup-data').innerHTML = '<hr/><pre>'+JSON.stringify(o, null, 2) + '</pre>';
@@ -402,6 +405,7 @@ function addMarker(feature, options) {
   layers.lines = layers.lines||[];
   layers.lines.push(line);
   line.feature = feature;
+  line.type = t.type;
 
 /*
   var symbol = {
@@ -422,6 +426,8 @@ function addMarker(feature, options) {
 
   let marker = new maptalks.Marker([x,y,z], { symbol: getSymbol(feature, opacity) });
   marker.feature = feature; // leaflet uses marker.feature after loading geojson
+  marker.type = t.type;
+
   layers[t.group] = layers[t.group] || [];
   layers[t.group].push(marker);
 
@@ -507,7 +513,6 @@ function loadMarkersBatched(features, options) {
         let end = applyHeightFactor(o.target);
         let opacity = settings.markedItems[o.name] ? markedOpacity : 1;
 
-
         let points = parabola(start, end);
         points = simplify(points, 5);
 
@@ -518,6 +523,7 @@ function loadMarkersBatched(features, options) {
         layers.lines = layers.lines||[];
         layers.lines.push(line);
         line.feature = feature;
+        line.type = marker.type;
 
       }
 
@@ -536,7 +542,9 @@ function loadMarkers(data, mapId) {
 
   let area = mapId;
 
-  let options = {layers: {}, counters: {}, icons: {}};
+  counters = {};
+
+  let options = {layers: {}, counters: counters, icons: {}};
 
   if (mapId!='sw') {
     let features = [];
@@ -562,18 +570,87 @@ function loadMarkers(data, mapId) {
   loadMarkersBatched(data, options);
 }
 
-function addMarkers(markers, options) {
 
+function hideAll() {
+  settings.activeItems = {};
+  updateItems();
+  return false;
+}
+
+function showAll() {
+  settings.activeItems = {};
+  for (const groupName of Object.keys(counters)) {
+    for (const name of Object.keys(counters[groupName])) {
+      settings.activeItems[name] = true;
+    }
+  }
+  updateItems();
+  return false;
+}
+
+function showGroup(group) {
+  settings.activeItems = {};
+  for (const groupName of Object.keys(counters)) {
+    for (const name of Object.keys(counters[groupName])) {
+     if (group==groupName) settings.activeItems[name] = true;
+    }
+  }
+  updateItems();
+  return false;
+}
+
+function showItem(name) {
+  settings.activeItems = {};
+  settings.activeItems[name] = true;
+  updateItems();
+  return false;
+}
+
+function toggleGroup(group) {
+  let counter = 0;
+  let total = 0;
+
+  for (const name of Object.keys(counters[group])) {
+    if (settings.activeItems[name]!=true) counter += 1;
+    total += 1;
+  }
+
+  let selected = false;
+
+  if (counter==total) {
+    selected = true;
+  }
+
+  for (const name of Object.keys(counters[group])) {
+    if (selected) {
+      settings.activeItems[name] = true;
+    } else {
+      delete settings.activeItems[name];
+    }
+  }
+
+  updateItems();
+}
+
+function toggleItem(name) {
+  settings.activeItems[name] = !settings.activeItems[name];
+  updateItems();
+}
+
+function addMarkers(markers, options) {
   let [layers,counters,icons] = [options.layers, options.counters, options.icons];
 
   let groupLayer = new maptalks.GroupGLLayer('GroupGLLayer').addTo(map);
 
   for (const [name, geometries] of Object.entries(layers)) {
     if (name=='lines') {
+
       new maptalks.LineStringLayer(name, geometries, {
         style: { filter: true, symbol: { lineColor: '#eee', lineWidth: 4, lineOpacity: 0.75 } },
       }).addTo(groupLayer);
+
     } else if (name=='gltf') {
+
       new maptalks.GLTFLayer('gltf', geometries,{
         opacity: 0.5,
       }).addTo(groupLayer);
@@ -585,52 +662,22 @@ function addMarkers(markers, options) {
     }
   }
 
-  function toggleGroup(group) {
-    searchControl._input.value='';
-
-    // check if group was already toggled - enable all groups
-    let options = parseSearchOptions(settings.filter);
-    if (options.group == group) {
-      filterItems({text:''});
-    } else {
-      filterItems({group: group});
-    }
-
-    location.hash = '';
-  }
-
-  function toggleItem(type) {
-    searchControl._input.value='';
-    filterItems({type:type});
-    location.hash = '';
-  }
-
   // let tr = s=> typeData[s]?.title || (s[0].toUpperCase()+s.slice(1));
   let tr = s=> typeData[s]?.title || translate(s);
-
   markersControl = new MarkersControl(counters, {icons: icons, weights:{collectible: 1, misc:-2, actors:-1}, groupCallback: toggleGroup, itemCallback: toggleItem, translate: tr });
 
   let name = mapParam.markerName;
+  mapParam = {};
   if (name) {
-    if (name.includes(':')) {
-      settings.filter = name;
+    searchByTitle(name);
+  } else {
+    if (settings.filter) {
+      searchControl._input.value = settings.filter;
+      searchItems(settings.filter);
     } else {
-      settings.filter = 'title:' + name;
+      updateItems();
     }
   }
-
-  let filterOptions = parseSearchOptions(settings.filter);
-  filterItems(filterOptions);
-  if (filterOptions.text) {
-    searchControl._input.value = filterOptions.text;
-  } else if (filterOptions.title) {
-    //searchControl._input.value = 'title:'+filterOptions.title;
-  }
-
-
-  mapParam = {};
-
-  saveSettings();
 }
 
 function parseSearchOptions(line) {
@@ -653,19 +700,62 @@ function parseSearchOptions(line) {
   return result;
 }
 
-function filterItemsExt(s) {
-  let options = parseSearchOptions(s);
-  filterItems(options);
-}
 
-function filterItems(options) {
+function searchByTitle(title) {
+
+  let term = title.toLowerCase();
+  let selectedMarker = null;
   let groupLayer = map.getLayer('GroupGLLayer');
 
-  let [type, group, title, text] = [options.type, options.group, options.title, options.text];
+  for (const layer of groupLayer.getLayers()) {
+    for (marker of layer._geoList) {
 
-  //console.log('filtering by', options);
+      let res = false;
+      if (marker.feature) {
+        let t = getType(marker.feature);
+        let o = marker.feature.properties;
 
-  if (!group && !type && !title && !text) text = ''; // select all
+        if (t.title) {
+          let src = t.title.toLowerCase();
+          res = src==term || src==term.replaceAll('_',' ');
+        }
+
+        if (!res) res = title == o.name;
+
+      }
+
+      if (res) {
+        marker.show();
+        if (!selectedMarker && marker.type != 'LineString') {
+          selectedMarker = marker;
+        }
+      } else {
+        marker.hide();
+      }
+
+    }
+  }
+
+  if (selectedMarker) {
+    let marker = selectedMarker;
+    popupOnClick({target: marker});
+    marker.openInfoWindow();
+  }
+
+}
+
+
+function searchItems(text) {
+  let groupLayer = map.getLayer('GroupGLLayer');
+
+  settings.filter = text;
+
+  if (text=='') {
+    updateItems();
+    return;
+  }
+
+  saveSettings();
 
   let terms = [];
   if (text) {
@@ -683,13 +773,7 @@ function filterItems(options) {
       if (marker.feature) {
         let t = getType(marker.feature);
         let o = marker.feature.properties;
-        res = getBaseName(t.type) == getBaseName(type) || t.group==group || o.name==title || text=='';
-
-        if (!res && title && t.title) {
-          let src = t.title.toLowerCase();
-          let term = title.toLowerCase();
-          res = src==term || src==term.replaceAll('_',' ');
-        }
+        res = false;
 
         let mask = {};
         if (!res && terms.length) {
@@ -705,50 +789,17 @@ function filterItems(options) {
           }
           res = terms.every(term=>mask[term]);
         }
-
       }
 
       if (res) {
         marker.show();
-
-        if (marker.type != 'LineString') {
-          counter += 1
-          lastMarker = marker;
-        }
-
       } else {
         marker.hide();
       }
     }
   }
 
-  // open popup on last marker, counter==2 because lines
-  if (counter==1 && lastMarker) {
-    let marker = lastMarker;
-    popupOnClick({target: marker});
-    marker.openInfoWindow();
-  }
-
   searchControl._input.title = `${counter} markers`;
-
-  settings.filter = group ? 'group:'+group : ( type ? 'type:'+type : text );
-  //console.log('saving filter', settings.filter);
-
-  // update markers control
-  let allSelected = text === '';
-  document.querySelectorAll('.markers-control-group').forEach(group => {
-    const items = group.parentElement.querySelectorAll('.markers-control-item');
-    let anySelected = false;
-    const groupSelected = allSelected || group.dataset.name === options.group;
-    items.forEach(item => {
-      const selected = groupSelected || item.dataset.name === options.type;
-      item.classList.toggle('selected', selected);
-      anySelected ||= selected;
-    });
-    group.classList.toggle('selected', groupSelected || anySelected);
-  });
-
-  saveSettings();
 
   return false;
 }
@@ -785,7 +836,8 @@ function loadMap(mapId) {
     localData[id] = localData[id] || {};
     localData[id].markedItems = localData[id].markedItems || {};
     localData[id].activeLayers = localData[id].activeLayers || {'collectible':true};
-    localData[id].filter = localData[id].filter || 'group:collectible';
+    localData[id].filter = localData[id].filter!==undefined ? localData[id].filter : 'group:collectible';
+    localData[id].activeItems = localData[id].activeItems || {'SecretVolume_C':true};
   }
 
   settings = localData[mapId];
@@ -909,7 +961,7 @@ function loadMap(mapId) {
   searchControl = new SearchControl();
   searchControl._handleSubmit = function() {
     location.hash = '';
-    filterItemsExt(searchControl._input.value);
+    searchItems(searchControl._input.value);
   }
 
   searchControl._input.setAttribute('placeholder', gameTitle);
@@ -1011,6 +1063,8 @@ window.onload = function(event) {
   document.querySelector('#reset_data').onclick = resetLocalData;
   document.querySelector('#copy_path').onclick = copySavePath;
   document.querySelector('#import_save').onclick = importSaveFile;
+  document.querySelector('#show_all').onclick = showAll;
+  document.querySelector('#hide_all').onclick = hideAll;
 
   let promises = [
     'data/types.json',
@@ -1086,6 +1140,39 @@ function saveLocalData() {
         a.remove();
     }
   }
+}
+
+function updateItems() {
+  searchControl._input.value='';
+
+  let groupLayer = map.getLayer('GroupGLLayer');
+
+  for (const layer of groupLayer.getLayers()) {
+    for (marker of layer._geoList) {
+
+      let type = getBaseName(marker.type);
+
+      if (settings.activeItems[type]) {
+        marker.show();
+      } else {
+        marker.hide();
+      }
+    }
+  }
+
+  document.querySelectorAll('.markers-control-group').forEach(group => {
+    const items = group.parentElement.querySelectorAll('.markers-control-item');
+    let anySelected = false;
+    items.forEach(item => {
+      let type = getBaseName(item.dataset.name);
+      const selected = settings.activeItems[type]==true;
+      item.classList.toggle('selected', selected);
+      anySelected ||= selected;
+    });
+    group.classList.toggle('selected', anySelected);
+  });
+
+  saveSettings();
 }
 
 function markItems() {
