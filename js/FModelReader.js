@@ -149,8 +149,8 @@ function markerLoader(data) {
 
       if (((c = p.Color) || (c = p.Color_Initial) || (c = p.ButtonColor) || (c = p.LiquidColor)) && typeof c === 'string') prop.color = c;
 
-      const getString = t => t?.SourceString || (t && typeof t === 'object' && Object.values(t).map(getString).find(Boolean)) || null;
-      if (p.CharacterTalk) prop.text = getString(p.CharacterTalk);
+      const collectStrings = t => t?.SourceString ? [t.SourceString] : (t && typeof t === 'object' ? Object.values(t).flatMap(collectStrings): []);
+      if (p.CharacterTalk) prop.text = collectStrings(p.CharacterTalk);
 
       if (p.Achievement?.TagName) prop.achievement = p.Achievement.TagName.split('.').pop();
     }
