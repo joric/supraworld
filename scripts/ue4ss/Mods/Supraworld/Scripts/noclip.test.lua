@@ -70,6 +70,13 @@ local function start(pc)
     pc:EnableInput(pc)
 end
 
+local function fillSuit()
+    local suit = FindFirstOf("Equippable_SpongeSuit_C")
+    if suit then
+    suit:SetCurrentFill(100.0)
+    end
+end
+
 local function toggleDebugCamera()
     local dc = getDebugCameraController()
     local pc = UEHelpers.GetPlayerController()
@@ -88,6 +95,7 @@ local function toggleDebugCamera()
         cheatable(pc).CheatManager:EnableDebugCamera()
     end
 end
+
 local function teleportToTrace(CameraController, PlayerController)
     local GetKismetSystemLibrary = UEHelpers.GetKismetSystemLibrary
     local GetKismetMathLibrary = UEHelpers.GetKismetMathLibrary
@@ -141,6 +149,9 @@ end
 
 
 local function teleportPlayer()
+
+    fillSuit()
+
     if not inDebugCamera then return end
 
     local pc = UEHelpers.GetPlayerController()
