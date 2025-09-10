@@ -405,7 +405,7 @@ function addMarker(feature, options) {
   layers.lines = layers.lines||[];
   layers.lines.push(line);
   line.feature = feature;
-  line.type = t.type;
+  line.options.type = t.type;
 
 /*
   var symbol = {
@@ -426,7 +426,7 @@ function addMarker(feature, options) {
 
   let marker = new maptalks.Marker([x,y,z], { symbol: getSymbol(feature, opacity) });
   marker.feature = feature; // leaflet uses marker.feature after loading geojson
-  marker.type = t.type;
+  marker.options.type = t.type;
 
   layers[t.group] = layers[t.group] || [];
   layers[t.group].push(marker);
@@ -523,7 +523,7 @@ function loadMarkersBatched(features, options) {
         layers.lines = layers.lines||[];
         layers.lines.push(line);
         line.feature = feature;
-        line.type = marker.type;
+        line.options.type = marker.type;
 
       }
 
@@ -702,7 +702,6 @@ function parseSearchOptions(line) {
 
 
 function searchByTitle(title) {
-
   let term = title.toLowerCase();
   let selectedMarker = null;
   let groupLayer = map.getLayer('GroupGLLayer');
@@ -1150,7 +1149,7 @@ function updateItems() {
   for (const layer of groupLayer.getLayers()) {
     for (marker of layer._geoList) {
 
-      let type = getBaseName(marker.type);
+      let type = getBaseName(marker.options.type);
 
       if (settings.activeItems[type]) {
         marker.show();
