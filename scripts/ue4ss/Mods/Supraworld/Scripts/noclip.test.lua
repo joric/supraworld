@@ -21,17 +21,10 @@ NotifyOnNewObject("/Script/Engine.PlayerController", function(PlayerController)
     return cheatable(PlayerController)
 end)
 
-local function removeBlockingVolumes0()
-    for _, actor in ipairs(FindAllOf("SupraEABlockingVolume_C") or {}) do
-        if actor:IsValid() then
-            actor:K2_DestroyActor()
-        end
-    end
-end
-
 local function removeBlockingVolumes()
     for _, actor in ipairs(FindAllOf("SupraEABlockingVolume_C") or {}) do
         if actor:IsValid() then
+            -- actor:K2_DestroyActor()
             actor:SetActorEnableCollision(false)
         end
     end
