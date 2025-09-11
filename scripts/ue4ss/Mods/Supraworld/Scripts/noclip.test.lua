@@ -239,8 +239,10 @@ end
 local function spawnThings()
     -- dumpObjects()
     -- spawnObject('/Supraworld/Abilities/Spark/Inventory_Spark.Inventory_Spark_C') -- cant' really spawn abilities, need spawner
-
-    spawnObject('/Supraworld/Levelobjects/Carriables/ButtonBattery.ButtonBattery_C')
+    -- spawnObject('/Supraworld/Levelobjects/Carriables/ButtonBattery.ButtonBattery_C')
+    spawnObject('/Supraworld/Levelobjects/Carriables/AluminumBall.AluminumBall_C')
+    -- spawnObject('/Supraworld/Levelobjects/Carriables/FourLeafClover.FourLeafClover_C')
+    -- spawnObject('/Supraworld/Levelobjects/Carriables/Hats/JesterHat.JesterHat_C')
 end
 
 
