@@ -43,6 +43,12 @@ local function getFloorHeight(PlayerPawn, location)
 end
 
 local function fastTravel()
+    for _, actor in ipairs(FindAllOf("SupraEABlockingVolume_C") or {}) do
+        if actor:IsValid() then
+            actor:SetActorEnableCollision(false)
+        end
+    end
+
     local pc = UEHelpers.GetPlayerController()
     if not pc or not pc:IsValid() or not pc.Pawn or not pc.Pawn:IsValid() then
         print('invalid player controller')
