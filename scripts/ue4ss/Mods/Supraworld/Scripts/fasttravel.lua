@@ -6,20 +6,13 @@ local GetKismetSystemLibrary = UEHelpers.GetKismetSystemLibrary
 local function getFloorHeight(PlayerPawn, location)
     local StartVector = {X=location.X, Y=location.Y, Z=10000}
     local EndVector = {X=location.X, Y=location.Y, Z=-10000}
-
-    local TraceColor = {
-        ["R"] = 0,
-        ["G"] = 0,
-        ["B"] = 0,
-        ["A"] = 0,
-    }
+    local TraceColor = {R=0,G=0,B=0,A=0}
     local TraceHitColor = TraceColor
     local EDrawDebugTrace_Type_None = 0
     local ETraceTypeQuery_TraceTypeQuery1 = 0
-    local ActorsToIgnore = {
-    }
-
+    local ActorsToIgnore = {}
     local HitResult = {}
+
     local WasHit = GetKismetSystemLibrary():LineTraceSingle(
         PlayerPawn,
         StartVector,
