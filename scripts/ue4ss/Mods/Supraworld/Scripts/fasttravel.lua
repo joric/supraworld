@@ -60,9 +60,20 @@ end
 
 local function fastTravel()
 
-ExecuteWithDelay(250, function()
-ExecuteInGameThread(function()
-ExecuteInGameThread(function()
+    local pc = UEHelpers.GetPlayerController()
+    if not pc or not pc:IsValid() or not pc.Pawn or not pc.Pawn:IsValid() then
+        print('failed local controller')
+        return
+    end
+
+    local ploc = {X=0, Y=0, Z=0}
+    local rot = {}
+    local p = pc.Pawn
+    ploc = p:K2_GetActorLocation()
+    rot = p:K2_GetActorRotation()
+
+    ExecuteWithDelay(500, function()
+    ExecuteInGameThread(function()
 
     print('--- teleporting ---')
 
@@ -70,69 +81,47 @@ ExecuteInGameThread(function()
 
     if widget and widget:IsValid() then
 
-        local pc = UEHelpers.GetPlayerController()
-        local ploc = {X=0, Y=0, Z=0}
-        local rot = {}
-
-        if pc and pc:IsValid() and pc.Pawn and pc.Pawn:IsValid() then
-            ploc = pc.Pawn:K2_GetActorLocation()
-            rot = pc.Pawn:K2_GetActorRotation()
-            -- printv('ploc', ploc)
-        end
-
-
         local virtualMap = {}
         local mapLocation = {}
         local ok = widget:GetMousePositionOnVirtualMap(virtualMap, mapLocation)
+
         printv('vmap', virtualMap)
         printv('mloc', mapLocation)
 
-        local worldX, worldY = 0, 0
+        if ok and virtualMap.X ~= 0.0 or virtualMap.Y ~= 0.0 then
 
-        -- magic to calculate worldX and WorldY from vmap/mloc, tloc must match corresponding vmap/mloc
+            local worldX, worldY = 0, 0
 
-        worldX = (mapLocation.X - 0.5) * 200000 - 16500
-        worldY = (mapLocation.Y - 0.5) * 200000 - 16500
+            -- magic to calculate worldX and WorldY from vmap/mloc, tloc must match corresponding vmap/mloc
 
-        -- magic ends here
+            worldX = (mapLocation.X - 0.5) * 200000 - 16500
+            worldY = (mapLocation.Y - 0.5) * 200000 - 16500
 
-        local tloc = {X = worldX, Y = worldY}
-        printv("tloc:", tloc)
+            -- magic ends here
 
-        local location = {X=tloc.X, Y=tloc.Y, Z=5000}
+            local tloc = {X = worldX, Y = worldY}
+            printv("tloc:", tloc)
 
-        local loc = getFloorLocation(pc.Pawn, location)
+            local location = {X=tloc.X, Y=tloc.Y, Z=5000}
 
-        printv('teleporting to', loc)
+            p:SetActorEnableCollision(false)
 
-        pc.Pawn:K2_TeleportTo(loc, rot)
+            local loc = getFloorLocation(p, location)
 
+            printv('teleporting to', loc)
 
-        --[[
-            Example data (can be a little delta) vmap may be irrelevant
+            p:K2_TeleportTo(loc, rot)
 
-            vmap       0.4     0.67391304347826
-            mloc       0.56446549651226        0.59674398117968
-            tloc       -3612.85009765625   2852.310546875
+            p:SetActorEnableCollision(true)
 
-            vmap       0.63229166666667        0.55978260869565
-            mloc       0.60627799817374        0.58690023078852
-            tloc        4782.294921875 858.2172241210938
-
-            vmap       0.8078125       0.41521739130435
-            mloc       0.63787174942917        0.57443148029306
-            tloc       11050 -1600
-
-            vmap       0.6359375       0.69565217391304
-            mloc       0.60693424819982        0.59861898125418
-            tloc       4881.12841796875 3223.8759765625
-        ]]
+        else
+            print('vmap is 0, cannnot teleport, try again')
+        end
 
     else
         print("widget not found")
     end
 
-    end)
     end)
     end)
 end
