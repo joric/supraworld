@@ -106,19 +106,13 @@ local function getTargetPoint()
     local StartVector = CameraManager:GetCameraLocation()
     local AddValue = GetKismetMathLibrary():Multiply_VectorInt(GetKismetMathLibrary():GetForwardVector(CameraManager:GetCameraRotation()), 50000.0)
     local EndVector = GetKismetMathLibrary():Add_VectorVector(StartVector, AddValue)
-    local TraceColor = {
-        ["R"] = 0,
-        ["G"] = 0,
-        ["B"] = 0,
-        ["A"] = 0,
-    }
+    local TraceColor = {R=0, G=0, B=0, A=0}
     local TraceHitColor = TraceColor
     local EDrawDebugTrace_Type_None = 0
     local ETraceTypeQuery_TraceTypeQuery1 = 0
-    local ActorsToIgnore = {
-    }
-    -- print("Doing line trace\n")
+    local ActorsToIgnore = {}
     local HitResult = {}
+
     local WasHit = GetKismetSystemLibrary():LineTraceSingle(
         PlayerPawn,
         StartVector,
@@ -133,18 +127,19 @@ local function getTargetPoint()
         TraceHitColor,
         0.0
     )
+
     if WasHit then
-        local loc = HitResult.ImpactPoint
-        print("ImpactPoint", loc.X, loc.Y, loc.Z)
-        return loc
+        return HitResult.ImpactPoint
     end
-    return {X=0,Y=0,Z=0}
+
+    return {X=0, Y=0, Z=0}
 end
 
 local function teleportToTrace(PlayerPawn)
     local loc = getTargetPoint()
+    loc.Z = loc.Z + 100 -- spawn a little bit above the ground
     local res = PlayerPawn:K2_SetActorLocation(loc, false, {}, false)
-    print("teleportToTrace", loc.X, loc.Y, loc.Z, rot, res)
+    -- print("teleportToTrace", loc.X, loc.Y, loc.Z, rot, res)
 end
 
 local function teleportPlayer()
@@ -153,7 +148,7 @@ local function teleportPlayer()
     local pc = UEHelpers.GetPlayerController()
     local dc = getDebugCameraController()
 
-    stop(pc)
+    -- stop(pc)
 
     pc:ClientFlushLevelStreaming()
     pc:ClientForceGarbageCollection()
@@ -174,7 +169,7 @@ local function teleportPlayer()
 
             teleportToTrace(pc.Pawn) -- may hit hidden volumes
 
-            start(pc)
+            -- start(pc)
 
         end)
         end)
