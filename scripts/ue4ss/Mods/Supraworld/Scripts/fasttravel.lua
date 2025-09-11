@@ -71,24 +71,14 @@ local function fastTravel()
 
         if ok and virtualMap.X ~= 0.0 or virtualMap.Y ~= 0.0 then
 
-            local worldX, worldY = 0, 0
+            local worldX = (mapLocation.X - 0.5) * 200000 - 16500
+            local worldY = (mapLocation.Y - 0.5) * 200000 - 16500
 
-            -- magic to calculate worldX and WorldY from vmap/mloc, tloc must match corresponding vmap/mloc
-
-            worldX = (mapLocation.X - 0.5) * 200000 - 16500
-            worldY = (mapLocation.Y - 0.5) * 200000 - 16500
-
-            -- magic ends here
-
-            local tloc = {X = worldX, Y = worldY}
-
-            local location = {X=tloc.X, Y=tloc.Y, Z=5000}
+            local loc = {X = worldX, Y = worldY, Z = 5000}
 
             p:SetActorEnableCollision(false)
 
-            local z = getFloorHeight(p, location)
-            local loc = {X = location.X, Y = location.Y, Z = z + 100 }
-            p:K2_TeleportTo(loc, rot)
+            p:K2_TeleportTo({X = loc.X, Y = loc.Y, Z = getFloorHeight(p, loc) + 100}, rot)
 
             p:SetActorEnableCollision(true)
 
