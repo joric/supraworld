@@ -107,6 +107,9 @@ let iconImages = {};
 let iconSize = 48;
 let markedOpacity = 0.33;
 let counters = {};
+//let theme = 'glass';
+//let theme = 'retro';
+let theme = '';
 
 let maps = {
   sw:  { 
@@ -661,7 +664,7 @@ function addMarkers(markers, options) {
 
   // let tr = s=> typeData[s]?.title || (s[0].toUpperCase()+s.slice(1));
   let tr = s=> typeData[s]?.title || translate(s);
-  markersControl = new MarkersControl(counters, {icons: icons, weights:{collectible: 1, misc:-2, actors:-1}, groupCallback: toggleGroup, itemCallback: toggleItem, translate: tr });
+  markersControl = new MarkersControl(counters, {theme: theme, icons: icons, weights:{collectible: 1, misc:-2, actors:-1}, groupCallback: toggleGroup, itemCallback: toggleItem, translate: tr });
 
   let name = mapParam.markerName;
   mapParam = {};
@@ -954,7 +957,7 @@ function loadMap(mapId) {
   let compassControl = new maptalks.control.Compass({position  : 'bottom-right'}).addTo(map)._compass.onclick = (e)=>map.getBearing()==0 && map.animateTo({ pitch: map.getPitch()==0 ? defaultPitch : 0 })
 
 
-  searchControl = new SearchControl();
+  searchControl = new SearchControl(null, {theme:theme});
   searchControl._handleSubmit = function() {
     location.hash = '';
     searchItems(searchControl._input.value);

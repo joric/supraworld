@@ -66,7 +66,7 @@ end
 local function fillSuit()
     local suit = FindFirstOf("Equippable_SpongeSuit_C")
     if suit then
-    suit:SetCurrentFill(100.0)
+    suit:SetCurrentFill(1.0)
     end
 end
 
