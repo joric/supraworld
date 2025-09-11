@@ -220,7 +220,8 @@ document.addEventListener('mousedown', function(event) {mouseMoved = false; });
 document.addEventListener('mousemove', function(event){mouseMoved = true;});
 
 function getBaseURL() {
-  return window.location.href.replace(/#.*$/,'');
+  //return window.location.href.replace(/#.*$/,'');
+  return 'https://joric.github.io/supraworld/';
 }
 
 function getMapURL(id) { return getBaseURL() + '#' + encodeURIComponent(id); }
