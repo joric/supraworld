@@ -49,6 +49,7 @@ function markerLoader(data) {
   let meshes = {};
   let messengers = {};
   let targets = {};
+  let components = {};
 
   function getMatrix(o, matrix) {
     matrix = matrix || new THREE.Matrix4();
@@ -112,13 +113,16 @@ function markerLoader(data) {
     if (o.Type=='StaticMeshComponent') meshes[o.Outer] = o;
     if (o.Type=='MessengerComponent') messengers[o.Outer] = o;
     if (o.Type=='SupraworldLaunchComponent_C') targets[o.Outer] = o;
+
+    components[o.Outer] = components[o.Outer] || {};
+    components[o.Outer][o.Name] = o;
   }
 
   let features = [];
 
   for (const o of data) {
     //if (!types[o.Type]) continue;
-    if (!o.Type.endsWith('_C')) continue; // supraland filter
+    if (!o.Type.endsWith('_C') && !o.Type.includes('TextRenderActor')) continue; // supraland filter
 
     let c = getLocation(o, area);
 
@@ -131,6 +135,7 @@ function markerLoader(data) {
     const getName = t => t.ObjectName ? getObjectName(t) : getAssetName(t);
 
     let prop = feature.properties;
+    const collectStrings = t => t?.SourceString ? [t.SourceString] : (t && typeof t === 'object' ? Object.values(t).flatMap(collectStrings): []);
 
     if (p=o.Properties) {
 
@@ -149,10 +154,17 @@ function markerLoader(data) {
 
       if (((c = p.Color) || (c = p.Color_Initial) || (c = p.ButtonColor) || (c = p.LiquidColor)) && typeof c === 'string') prop.color = c;
 
-      const collectStrings = t => t?.SourceString ? [t.SourceString] : (t && typeof t === 'object' ? Object.values(t).flatMap(collectStrings): []);
-      if (p.CharacterTalk) prop.text = collectStrings(p.CharacterTalk);
+      let text = collectStrings(p.CharacterTalk);
+      if (text && text.length) prop.text = text;
 
       if (p.Achievement?.TagName) prop.achievement = p.Achievement.TagName.split('.').pop();
+    }
+
+    for (const [name, comp] of Object.entries(components[o.Name]||{})) {
+      if (comp.Type == 'TextRenderComponent') {
+        let text = collectStrings(comp.Properties);
+        if (text && text.length) prop.text = text;
+      }
     }
 
     if ((m = meshes[o.Name]) && (m.Properties && m.Properties.OverrideMaterials)) {

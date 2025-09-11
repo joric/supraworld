@@ -373,6 +373,8 @@
   "ToyCharacterBase_C_failini": {"icon":"character","group":"NPCs", "title": "The Great Failini"},
 
   "CodeOrderUnlock_C": {"icon":"lock_grey","group":"misc"},
+  "TextRenderActor": {"icon":"text","group":"misc"},
+  "Bush_C": {"icon":"bush","group":"items"},
 
   "Jumppad_C": {"icon":"jumppad","group":"teleports","title":"Jump Pad"},
   "Jumppad_C:target": {"icon":"jumppad_target","group":"teleports","title":"Jump Target"},

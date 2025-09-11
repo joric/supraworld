@@ -791,6 +791,7 @@ function searchItems(text) {
       }
 
       if (res) {
+        if (marker.type != 'LineString') counter += 1;
         marker.show();
       } else {
         marker.hide();

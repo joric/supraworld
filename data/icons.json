@@ -184,6 +184,9 @@
   "phone": {"class":"fa fa-mobile","bg":"dodgerblue"},
   "small_button": {"class":"fa fa-arrows-to-dot","bg":"grey"},
 
+  "text": {"class":"fa fa-comment","bg":"dodgerblue"},
+  "bush": {"class":"fa fa-cloud","bg": "yellowgreen"},
+
   "paint_tube": {"class":"fa fa-paintbrush","bg":"red"},
   "paint_bottle": {"class":"fa fa-paint-roller","bg":"red"},
   "spring": {"class":"fa fa-spiral","bg":"dodgerblue"},
