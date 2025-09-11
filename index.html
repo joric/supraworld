@@ -704,6 +704,7 @@ function parseSearchOptions(line) {
 function searchByTitle(title) {
   let term = title.toLowerCase();
   let selectedMarker = null;
+  let counter = 0;
   let groupLayer = map.getLayer('GroupGLLayer');
 
   for (const layer of groupLayer.getLayers()) {
@@ -725,8 +726,9 @@ function searchByTitle(title) {
 
       if (res) {
         marker.show();
-        if (!selectedMarker && marker.type != 'LineString') {
-          selectedMarker = marker;
+        if (marker.type != 'LineString') {
+          if (!selectedMarker) selectedMarker = marker;
+          counter += 1;
         }
       } else {
         marker.hide();
@@ -735,7 +737,7 @@ function searchByTitle(title) {
     }
   }
 
-  if (selectedMarker) {
+  if (counter==1 && selectedMarker) {
     let marker = selectedMarker;
     popupOnClick({target: marker});
     marker.openInfoWindow();
