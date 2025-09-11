@@ -1,22 +1,9 @@
+print("--- fast travel ---")
+
 local UEHelpers = require("UEHelpers")
 local GetKismetSystemLibrary = UEHelpers.GetKismetSystemLibrary
 
-print("--- fast travel ---")
-
-local function printv(title, v)
-    if v then
-        if v.Z then
-            print(title, v.X, v.Y, v.Z)
-        else
-            print(title, v.X, v.Y)
-        end
-    else
-        print("nil vector")
-    end
-end
-
 local function getFloorHeight(PlayerPawn, location)
-
     local StartVector = {X=location.X, Y=location.Y, Z=10000}
     local EndVector = {X=location.X, Y=location.Y, Z=-10000}
 
@@ -49,20 +36,16 @@ local function getFloorHeight(PlayerPawn, location)
     )
 
     if WasHit then
-        print('floor found at', HitResult.ImpactPoint.Z)
         return  HitResult.ImpactPoint.Z
     end
 
     return location.Z
 end
 
-
-
 local function fastTravel()
-
     local pc = UEHelpers.GetPlayerController()
     if not pc or not pc:IsValid() or not pc.Pawn or not pc.Pawn:IsValid() then
-        print('failed local controller')
+        print('invalid player controller')
         return
     end
 
@@ -70,11 +53,9 @@ local function fastTravel()
     pc:ClientFlushLevelStreaming()
     pc:ClientForceGarbageCollection()
 
-    local ploc = {X=0, Y=0, Z=0}
-    local rot = {}
     local p = pc.Pawn
-    ploc = p:K2_GetActorLocation()
-    rot = p:K2_GetActorRotation()
+    local ploc = p:K2_GetActorLocation()
+    local rot = p:K2_GetActorRotation()
 
     ExecuteWithDelay(250, function()
     ExecuteInGameThread(function()
@@ -84,13 +65,9 @@ local function fastTravel()
     local widget = FindFirstOf("SW_PlayerMapWidget_C")
 
     if widget and widget:IsValid() then
-
         local virtualMap = {}
         local mapLocation = {}
         local ok = widget:GetMousePositionOnVirtualMap(virtualMap, mapLocation)
-
-        printv('vmap', virtualMap)
-        printv('mloc', mapLocation)
 
         if ok and virtualMap.X ~= 0.0 or virtualMap.Y ~= 0.0 then
 
@@ -104,16 +81,13 @@ local function fastTravel()
             -- magic ends here
 
             local tloc = {X = worldX, Y = worldY}
-            printv("tloc:", tloc)
 
             local location = {X=tloc.X, Y=tloc.Y, Z=5000}
 
             p:SetActorEnableCollision(false)
 
             local z = getFloorHeight(p, location)
-
             local loc = {X = location.X, Y = location.Y, Z = z + 100 }
-
             p:K2_TeleportTo(loc, rot)
 
             p:SetActorEnableCollision(true)
@@ -122,10 +96,6 @@ local function fastTravel()
             if comp and comp:IsValid() then
                 comp:UpdatePlayerLocationAndFog()
             end
-
-            -- widget:TickMe()
-            -- pc:GameMenuClosed()
-            -- pc:InputKey("Tab", "Pressed", 1.0, false)
 
         else
             print('vmap is 0, cannnot teleport, try again')
