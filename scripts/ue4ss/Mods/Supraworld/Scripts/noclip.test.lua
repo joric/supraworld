@@ -211,6 +211,8 @@ function SpawnActorFromClass(ActorClassName, Location, Rotation)
     if deferredActor:IsValid() then
         print("SpawnActorFromClass: Deferred Actor successfully")
         return gameplayStatics:FinishSpawningActor(deferredActor, transform, 0)
+    else
+        print("Deferred Actor failed", ActorClassName)
     end
     return invalidActor
 end
@@ -221,7 +223,6 @@ local function spawnObject(className)
     local rot = {Pitch=0, Yaw=0, Roll=0}
     ExecuteWithDelay(250, function()
         ExecuteInGameThread(function()
-            print('spawning actor')
             SpawnActorFromClass(className, loc, rot)
         end)
     end)
