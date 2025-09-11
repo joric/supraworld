@@ -1,6 +1,9 @@
 print("--- noclip.test ---")
 
 local UEHelpers = require("UEHelpers")
+local GetKismetSystemLibrary = UEHelpers.GetKismetSystemLibrary
+local GetKismetMathLibrary = UEHelpers.GetKismetMathLibrary
+local GetGameplayStatics = UEHelpers.GetGameplayStatics
 
 -- fixes ue4ss toggledebugcamera issue, see https://github.com/UE4SS-RE/RE-UE4SS/issues/514
 local function cheatable(PlayerController)
@@ -23,7 +26,7 @@ end)
 
 local function fillSuit()
     local suit = FindFirstOf("Equippable_SpongeSuit_C")
-    if suit then
+    if suit and suit:IsValid() then
         suit:SetCurrentFill(1.0)
     end
 end
@@ -89,29 +92,6 @@ local function toggleDebugCamera()
     end
 end
 
-local GetKismetSystemLibrary = UEHelpers.GetKismetSystemLibrary
-local GetKismetMathLibrary = UEHelpers.GetKismetMathLibrary
-local GetGameplayStatics = UEHelpers.GetGameplayStatics
-
-function IsValid(object)
-    return object ~= nil and object.IsValid ~= nil and object:IsValid()
-end
-
-function IsNotValid(object)
-    return not IsValid(object)
-end
-
-function FVector(X, Y, Z)
-    X = X or 0.0
-    Y = Y or 0.0
-    Z = Z or 0.0
-    return {
-        X = X,
-        Y = Y,
-        Z = Z
-    }
-end
-
 local function getTargetPoint()
     local PlayerController = UEHelpers.GetPlayerController()
     local CameraController = PlayerController
@@ -168,8 +148,6 @@ local function teleportToTrace(PlayerPawn)
 end
 
 local function teleportPlayer()
-    fillSuit()
-
     if not inDebugCamera then return end
 
     local pc = UEHelpers.GetPlayerController()
@@ -218,32 +196,19 @@ function SpawnActorFromClass(ActorClassName, Location, Rotation)
     if not kismetMathLibrary or not gameplayStatics then return invalidActor end
 
     local world = UEHelpers.GetWorld()
-    if IsNotValid(world) then return invalidActor end
+    if not world:IsValid() then return invalidActor end
 
     local actorClass = StaticFindObject(ActorClassName)
-    if IsNotValid(actorClass) then
+    if not actorClass:IsValid() then
         print("SpawnActorFromClass: Couldn't find static object:", ActorClassName)
         return invalidActor
     end
 
-    -- local transform = {Rotation=rot, Translation=loc, Scale3D={X=1, Y=1, Z=1}}
-    local transform = kismetMathLibrary:MakeTransform(Location, Rotation, FVector(1.0, 1.0, 1.0))
-
-    --[[
-    print("SpawnActorFromClass: UWorld: " .. type(world))
-    print("SpawnActorFromClass: class: " .. actorClass:type())
-    print("SpawnActorFromClass: transform: " .. type(transform))
-
-    for key, value in pairs(transform) do
-        print("key:", key, "value:", value)
-        for k, v in pairs(value) do
-            print("  k:", k, "v:", v)
-        end
-    end
-    ]]
+    local Scale = {X=1, Y=1, Z=1}
+    local transform = kismetMathLibrary:MakeTransform(Location, Rotation, Scale)
 
     local deferredActor  = gameplayStatics:BeginDeferredActorSpawnFromClass(world, actorClass, transform, 0, nil, 0)
-    if IsValid(deferredActor) then
+    if deferredActor:IsValid() then
         print("SpawnActorFromClass: Deferred Actor successfully")
         return gameplayStatics:FinishSpawningActor(deferredActor, transform, 0)
     end
@@ -254,14 +219,12 @@ end
 local function spawnObject(className)
     local loc = getTargetPoint()
     local rot = {Pitch=0, Yaw=0, Roll=0}
-
     ExecuteWithDelay(250, function()
         ExecuteInGameThread(function()
             print('spawning actor')
             SpawnActorFromClass(className, loc, rot)
         end)
     end)
-
 end
 
 local function dumpObjects()
@@ -274,6 +237,7 @@ local function dumpObjects()
 end
 
 local function spawnThings()
+    -- dumpObjects()
     -- spawnObject('/Supraworld/Abilities/Spark/Inventory_Spark.Inventory_Spark_C') -- cant' really spawn abilities, need spawner
 
     spawnObject('/Supraworld/Levelobjects/Carriables/ButtonBattery.ButtonBattery_C')
@@ -283,4 +247,5 @@ end
 RegisterKeyBind(Key.MIDDLE_MOUSE_BUTTON, toggleDebugCamera)
 RegisterKeyBind(Key.LEFT_MOUSE_BUTTON, teleportPlayer)
 RegisterKeyBind(Key.RIGHT_MOUSE_BUTTON, spawnThings)
+RegisterKeyBind(Key.F, fillSuit)
 
