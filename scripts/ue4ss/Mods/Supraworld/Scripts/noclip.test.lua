@@ -24,13 +24,6 @@ NotifyOnNewObject("/Script/Engine.PlayerController", function(PlayerController)
     return cheatable(PlayerController)
 end)
 
-local function fillSuit()
-    local suit = FindFirstOf("Equippable_SpongeSuit_C")
-    if suit and suit:IsValid() then
-        suit:SetCurrentFill(1.0)
-    end
-end
-
 local function removeBlockingVolumes()
     for _, actor in ipairs(FindAllOf("SupraEABlockingVolume_C") or {}) do
         if actor:IsValid() then
@@ -242,9 +235,6 @@ local function spawnThings()
     spawnObject('/Supraworld/Levelobjects/Carriables/ButtonBattery.ButtonBattery_C')
 end
 
-
 RegisterKeyBind(Key.MIDDLE_MOUSE_BUTTON, toggleDebugCamera)
 RegisterKeyBind(Key.LEFT_MOUSE_BUTTON, teleportPlayer)
 RegisterKeyBind(Key.RIGHT_MOUSE_BUTTON, spawnThings)
-RegisterKeyBind(Key.F, fillSuit)
-
