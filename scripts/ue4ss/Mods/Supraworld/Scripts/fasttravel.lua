@@ -15,7 +15,7 @@ local function printv(title, v)
     end
 end
 
-local function getFloorLocation(PlayerPawn, location)
+local function getFloorHeight(PlayerPawn, location)
 
     local StartVector = {X=location.X, Y=location.Y, Z=10000}
     local EndVector = {X=location.X, Y=location.Y, Z=-10000}
@@ -50,10 +50,10 @@ local function getFloorLocation(PlayerPawn, location)
 
     if WasHit then
         print('floor found at', HitResult.ImpactPoint.Z)
-        return  HitResult.ImpactPoint
+        return  HitResult.ImpactPoint.Z
     end
 
-    return location
+    return location.Z
 end
 
 
@@ -66,13 +66,17 @@ local function fastTravel()
         return
     end
 
+    -- these lines really help
+    pc:ClientFlushLevelStreaming()
+    pc:ClientForceGarbageCollection()
+
     local ploc = {X=0, Y=0, Z=0}
     local rot = {}
     local p = pc.Pawn
     ploc = p:K2_GetActorLocation()
     rot = p:K2_GetActorRotation()
 
-    ExecuteWithDelay(500, function()
+    ExecuteWithDelay(250, function()
     ExecuteInGameThread(function()
 
     print('--- teleporting ---')
@@ -106,13 +110,22 @@ local function fastTravel()
 
             p:SetActorEnableCollision(false)
 
-            local loc = getFloorLocation(p, location)
+            local z = getFloorHeight(p, location)
 
-            printv('teleporting to', loc)
+            local loc = {X = location.X, Y = location.Y, Z = z + 100 }
 
             p:K2_TeleportTo(loc, rot)
 
             p:SetActorEnableCollision(true)
+
+            local comp = FindFirstOf("PlayerMapComponent_C")
+            if comp and comp:IsValid() then
+                comp:UpdatePlayerLocationAndFog()
+            end
+
+            -- widget:TickMe()
+            -- pc:GameMenuClosed()
+            -- pc:InputKey("Tab", "Pressed", 1.0, false)
 
         else
             print('vmap is 0, cannnot teleport, try again')
