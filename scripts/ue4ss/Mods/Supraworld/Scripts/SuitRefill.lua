@@ -5,4 +5,4 @@ local function suitRefill()
     end
 end
 
-RegisterKeyBind(Key.F, suitRefill)
+RegisterKeyBind(Key.R, suitRefill)

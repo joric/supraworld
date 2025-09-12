@@ -51,4 +51,4 @@ local function fastTravel()
     end)
 end
 
-RegisterKeyBind(Key.T, fastTravel)
+RegisterKeyBind(Key.F, fastTravel)
