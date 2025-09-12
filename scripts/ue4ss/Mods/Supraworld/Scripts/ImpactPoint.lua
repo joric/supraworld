@@ -10,4 +10,3 @@ function getImpactPoint(WorldObject, StartVector, Rotation)
     if WasHit then return HitResult.ImpactPoint end
     return {X=0, Y=0, Z=0}
 end
-
