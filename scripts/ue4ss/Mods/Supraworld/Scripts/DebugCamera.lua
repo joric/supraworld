@@ -40,8 +40,7 @@ end
 
 local function teleportToTrace(PlayerPawn)
     local cam = getDebugCameraController().PlayerCameraManager
-    local rot = cam:GetCameraRotation()
-    local loc = getImpactPoint(PlayerPawn, cam:GetCameraLocation(), rot)
+    local loc = getImpactPoint(PlayerPawn, cam:GetCameraLocation(), cam:GetCameraRotation())
     loc.Z = loc.Z + 100 -- above the ground
     local res = PlayerPawn:K2_SetActorLocation(loc, false, {}, false)
 end
