@@ -37,9 +37,11 @@ end
 
 local function teleportToTrace(PlayerPawn)
     local cam = getDebugCameraController().PlayerCameraManager
-    local loc = getImpactPoint(PlayerPawn, cam:GetCameraLocation(), cam:GetCameraRotation())
+    local rot = cam:GetCameraRotation()
+    local loc = getImpactPoint(PlayerPawn, cam:GetCameraLocation(), rot)
     loc.Z = loc.Z + 100 -- above the ground
-    local res = PlayerPawn:K2_SetActorLocation(loc, false, {}, false)
+    -- PlayerPawn:K2_SetActorLocation(loc, false, {}, false)
+    PlayerPawn:K2_TeleportTo(loc, rot) -- also updates physics
 end
 
 local function teleportPlayer()
@@ -51,7 +53,7 @@ local function teleportPlayer()
     pc:ClientFlushLevelStreaming()
     pc:ClientForceGarbageCollection()
 
-    local throttleMs = 350
+    local throttleMs = 300
     ExecuteWithDelay(throttleMs, function()
         ExecuteInGameThread(function()
         ExecuteInGameThread(function()
