@@ -51,7 +51,7 @@ local function teleportPlayer()
     pc:ClientFlushLevelStreaming()
     pc:ClientForceGarbageCollection()
 
-    local throttleMs = 250
+    local throttleMs = 350
     ExecuteWithDelay(throttleMs, function()
         ExecuteInGameThread(function()
             if (os.clock() - (lastTime or 0)) * 1000 < throttleMs then return end
