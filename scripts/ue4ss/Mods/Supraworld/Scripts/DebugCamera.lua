@@ -58,7 +58,6 @@ local function teleportPlayer()
         ExecuteInGameThread(function()
             if (os.clock() - (lastTime or 0)) * 1000 < throttleMs then return end
             lastTime = os.clock()
-            -- pc.Pawn:K2_TeleportTo(cam:GetCameraLocation(), cam:GetCameraRotation()) -- teleport to camera position
             -- getDebugCameraController().CheatManager:Teleport() -- built in teleport, needs line of sight
             teleportToTrace(pc.Pawn) -- teleport to impact point, may hit hidden volumes
         end)
