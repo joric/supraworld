@@ -26,15 +26,12 @@ local function getDebugCameraController()
 end
 
 local function toggleDebugCamera()
-    local dc = getDebugCameraController()
-    local pc = UEHelpers.GetPlayerController()
-
-    if inDebugCamera then
-        inDebugCamera = false
-        cheatable(dc).CheatManager:DisableDebugCamera()
-    else
+    if not inDebugCamera then
         inDebugCamera = true
-        cheatable(pc).CheatManager:EnableDebugCamera()
+        cheatable(UEHelpers.GetPlayerController()).CheatManager:EnableDebugCamera()
+    else
+        inDebugCamera = false
+        cheatable(getDebugCameraController()).CheatManager:DisableDebugCamera()
     end
 end
 
