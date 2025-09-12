@@ -1,4 +1,4 @@
--- see https://github.com/joric/supraworld/wiki/Modding for details
+-- https://github.com/joric/supraworld/wiki/Modding
 
 local UEHelpers = require("UEHelpers")
 
