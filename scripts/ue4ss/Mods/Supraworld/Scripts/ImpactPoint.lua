@@ -1,3 +1,5 @@
+-- see https://github.com/joric/supraworld/wiki/Modding for details
+
 local UEHelpers = require("UEHelpers")
 
 -- uses PlayerPawn as a world context object

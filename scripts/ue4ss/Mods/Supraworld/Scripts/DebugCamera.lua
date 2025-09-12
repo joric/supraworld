@@ -1,3 +1,5 @@
+-- see https://github.com/joric/supraworld/wiki/Modding for details
+
 local UEHelpers = require("UEHelpers")
 
 -- fixes ue4ss toggledebugcamera issue, see https://github.com/UE4SS-RE/RE-UE4SS/issues/514
