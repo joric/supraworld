@@ -62,4 +62,4 @@ local function spawnThings()
     spawnClass('/Supraworld/Levelobjects/Carriables/ButtonBattery.ButtonBattery_C')
 end
 
-RegisterKeyBind(Key.T, spawnThings)
+RegisterKeyBind(Key.G, spawnThings)

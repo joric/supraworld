@@ -1,5 +1,6 @@
 local UEHelpers = require("UEHelpers")
 
+-- uses PlayerPawn as a world context object
 function getImpactPoint(PlayerPawn, StartVector, Rotation)
     local AddValue = UEHelpers.GetKismetMathLibrary():Multiply_VectorInt(UEHelpers.GetKismetMathLibrary():GetForwardVector(Rotation), 50000.0)
     local EndVector = UEHelpers.GetKismetMathLibrary():Add_VectorVector(StartVector, AddValue)

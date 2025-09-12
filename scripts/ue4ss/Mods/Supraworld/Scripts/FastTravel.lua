@@ -1,7 +1,8 @@
 local UEHelpers = require("UEHelpers")
 
-local function getFloorHeight(PlayerPawn, StartVector)
-    local Rotation = { Pitch = -90, Yaw = 0, Roll = 0 } -- look down
+local function getFloorHeight(PlayerPawn, worldX, worldY)
+    local StartVector = {X = worldX, Y = worldY, Z = 10000}
+    local Rotation = { Pitch = -90, Yaw = 0, Roll = 0 } -- points down
     return getImpactPoint(PlayerPawn, StartVector, Rotation).Z
 end
 
@@ -28,9 +29,8 @@ local function fastTravel()
 
                     local worldX = (mapLocation.X - 0.5) * 200000 - 16500
                     local worldY = (mapLocation.Y - 0.5) * 200000 - 16500
-
-                    local loc = {X = worldX, Y = worldY, Z = 10000}
-                    loc.Z = getFloorHeight(pc.Pawn, loc) + 100 -- 1 meter above ground
+                    local floorHeight = getFloorHeight(pc.Pawn, worldX, worldY)
+                    local loc = {X = worldX, Y = worldY, Z = floorHeight + 100} -- 1 meter above ground
 
                     pc.Pawn:K2_TeleportTo(loc, pc.Pawn:K2_GetActorRotation())
 
@@ -51,4 +51,4 @@ local function fastTravel()
     end)
 end
 
-RegisterKeyBind(Key.Z, fastTravel)
+RegisterKeyBind(Key.T, fastTravel)
