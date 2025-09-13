@@ -6,13 +6,15 @@ local function removeCutscenes()
     for _, obj in ipairs(FindAllOf("SupraworldCutScene_C") or {}) do
         if obj and obj:IsValid() then
             print("--- disabling cutscene ---", obj:GetFullName())
-            -- obj:SetActorEnableCollision(false)
+            -- obj:SetActorEnableCollision(false) -- does not work, need NPC manager
             obj:K2_DestroyActor() -- this works
         end
     end
 end
 
 local function skipCutscene()
+
+    removeCutscenes()
 
     for _, obj in ipairs(FindAllOf("LevelSequencePlayer") or {}) do
         if obj:IsValid() then
@@ -38,7 +40,7 @@ local function skipCutscene()
 end
 
 RegisterHook("/Script/Engine.PlayerController:ClientRestart", function(self)
-    removeCutscenes()
+    -- removeCutscenes()
 end)
 
 RegisterKeyBind(Key.P, skipCutscene)
