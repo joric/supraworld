@@ -37,7 +37,8 @@ local function fastTravel()
             local worldX = (mapLocation.X - 0.5) * mapActor.MapWorldSize + mapActor.MapWorldCenter.X
             local worldY = (mapLocation.Y - 0.5) * mapActor.MapWorldSize + mapActor.MapWorldCenter.Y
 
-            local floorHeight = getFloorHeight(pc.Pawn, worldX, worldY, math.max(25000, mapActor.CaptureHeight))
+            local maxHeigth = mapActor.CaptureHeight - mapActor.MapWorldCenter.Z + mapActor.MapWorldUpperLeft.Z
+            local floorHeight = getFloorHeight(pc.Pawn, worldX, worldY, maxHeight)
             local loc = {X = worldX, Y = worldY, Z = floorHeight + 100}
 
             pc.Pawn:K2_TeleportTo(loc, pc.Pawn:K2_GetActorRotation())
