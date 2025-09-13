@@ -7,7 +7,7 @@ require("SuitRefill")
 require("FastTravel")
 require("SpawnThings")
 require("OpenThings")
-require("SkipCutscene")
+require("SkipCutscenes")
 require("GameStats")
 
 
