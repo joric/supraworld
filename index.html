@@ -1205,21 +1205,19 @@ function importSaveFileExt() {
         console.log('Save file loaded.');
 
         let count = 0;
-        let added = 0;
 
         for(const [key,o] of Object.entries(gameData.dynamicSaveData.ObjectData)) {
           if (o.ItemIsTaken || o.bFound || o.Active || o.bPickedUp || o.Exists==false || o.State>1 || o.State===0 || o.bUnlocked || o.bIsBroken) {
             let name = key.split('.').pop();
-            if (settings.markedItems[name]!=true) added += 1;
+            if (settings.markedItems[name]!=true) count += 1;
             settings.markedItems[name] = true;
-            count += 1;
           }
         }
 
         markItems();
         saveSettings();
 
-        setTimeout(()=>alert(`Marked ${count} items (${added} new).`),0);
+        setTimeout(()=>alert(`Marked ${count} items.`),0);
 
       } catch(e) {
         console.log(e);
