@@ -17,8 +17,9 @@ local function createTextWidget(text)
     hud:SetVisibility(0)
     hud:AddToViewport(10000)
 
-    print('--- text block ---')
-    block:SetText(FText(text)) -- everything is valid but it crashes here
+    print('--- text client message ---')
+    local pc = UEHelpers.GetPlayerController()
+    pc:ClientMessage("Hello from ClientMessage", "None", 3.0)
 
     print('--- text ksl message ---')
     local ksl = StaticFindObject("/Script/Engine.Default__KismetSystemLibrary")
@@ -28,9 +29,8 @@ local function createTextWidget(text)
     local engine = FindFirstOf("Engine")
     engine:AddOnScreenDebugMessage(-1, 5.0, {R=0,G=255,B=0,A=255}, "Hello from DebugMessage")
 
-    print('--- text client message ---')
-    local pc = UEHelpers.GetPlayerController()
-    pc:ClientMessage("Hello from ClientMessage", "None", 3.0)
+    print('--- text block ---')
+    block:SetText(FText(text)) -- everything is valid but it crashes here
 
 end
 
