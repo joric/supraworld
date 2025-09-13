@@ -39,9 +39,9 @@ local function skipCutscene()
 
 end
 
-RegisterHook("/Script/Engine.PlayerController:ClientRestart", function(self)
+-- RegisterHook("/Script/Engine.PlayerController:ClientRestart", function(self)
     -- removeCutscenes() -- may be side effects, so disabled
-end)
+-- end)
 
 RegisterKeyBind(Key.P, skipCutscene)
 
