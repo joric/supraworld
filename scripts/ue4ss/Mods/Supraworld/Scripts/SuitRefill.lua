@@ -1,9 +1,9 @@
 -- https://github.com/joric/supraworld/wiki/Modding
 
 local function suitRefill()
-    local suit = FindFirstOf("Equippable_SpongeSuit_C")
-    if suit and suit:IsValid() then
-        suit:SetCurrentFill(1.0)
+    local obj = FindFirstOf("Equippable_SpongeSuit_C")
+    if obj and obj:IsValid() then
+        obj:SetCurrentFill(1.0)
     end
 end
 
