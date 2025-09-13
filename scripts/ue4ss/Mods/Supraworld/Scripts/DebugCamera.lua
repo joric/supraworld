@@ -48,10 +48,14 @@ local function teleportPlayer()
     if not inDebugCamera then return end
 
     local pc = UEHelpers.GetPlayerController()
-    local cam = getDebugCameraController().PlayerCameraManager
+    local cc = getDebugCameraController()
+    local cam = cc.PlayerCameraManager
 
     pc:ClientFlushLevelStreaming()
     pc:ClientForceGarbageCollection()
+
+    cc:ClientFlushLevelStreaming()
+    cc:ClientForceGarbageCollection()
 
     local throttleMs = 300
     ExecuteWithDelay(throttleMs, function()
