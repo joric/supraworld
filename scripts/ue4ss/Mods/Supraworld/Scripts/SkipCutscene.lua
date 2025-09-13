@@ -14,8 +14,6 @@ end
 
 local function skipCutscene()
 
-    removeCutscenes()
-
     for _, obj in ipairs(FindAllOf("LevelSequencePlayer") or {}) do
         if obj:IsValid() then
             print("--- player ---", obj:GetFullName(), obj:GetFrameDuration(), obj:IsPlaying() )
@@ -40,7 +38,7 @@ local function skipCutscene()
 end
 
 RegisterHook("/Script/Engine.PlayerController:ClientRestart", function(self)
-    -- removeCutscenes()
+    removeCutscenes()
 end)
 
 RegisterKeyBind(Key.P, skipCutscene)
