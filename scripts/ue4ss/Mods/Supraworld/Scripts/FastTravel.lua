@@ -21,13 +21,13 @@ local function fastTravel()
         ExecuteInGameThread(function()
 
             local widget = FindFirstOf("SW_PlayerMapWidget_C")
-            if not widget or not widget:IsValid() then
+            if not widget:IsValid() then
                 widget = FindFirstOf("PlayerMapWidget_C")
-                if not widget or not widget:IsValid() then return end
+                if not widget:IsValid() then return end
             end
 
             local mapActor = FindFirstOf("PlayerMapActor_C")
-            if not mapActor or not mapActor:IsValid() then return end
+            if not mapActor:IsValid() then return end
 
             local virtualMap = {}
             local mapLocation = {}
@@ -45,7 +45,7 @@ local function fastTravel()
             pc.Pawn:K2_TeleportTo(loc, pc.Pawn:K2_GetActorRotation())
 
             local comp = FindFirstOf("PlayerMapComponent_C")
-            if comp and comp:IsValid() then
+            if comp:IsValid() then
                 comp:UpdatePlayerLocationAndFog()
             end
 
