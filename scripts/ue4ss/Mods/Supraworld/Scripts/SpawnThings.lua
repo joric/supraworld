@@ -64,4 +64,7 @@ local function spawnThings()
     spawnClass('/Supraworld/Levelobjects/Carriables/ButtonBattery.ButtonBattery_C')
 end
 
+-- you can also use "summon" in console, e.g. "summon Bush_C"
+
 RegisterKeyBind(Key.G, spawnThings)
+
