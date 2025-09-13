@@ -15,16 +15,22 @@ local function createTextWidget(text)
     vbox:AddChildToVerticalBox(block)
 
     hud:SetVisibility(0)
-    hud:AddToViewport(99)
+    hud:AddToViewport(10000)
 
+    print('--- text block ---')
     block:SetText(FText(text)) -- everything is valid but it crashes here
 
-    -- local ksl = StaticFindObject("/Script/Engine.Default__KismetSystemLibrary")
-    -- ksl:PrintString(nil, "Hello from PrintString", true, false, {R=0,G=1,B=0,A=1}, 5.0, "")
-    -- local engine = FindFirstOf("Engine")
-    -- engine:AddOnScreenDebugMessage(-1, 5.0, FColor(255,0,0,255), "Hello from DebugMessage")
-    -- local pc = UEHelpers.GetPlayerController()
-    -- pc:ClientMessage("Hello from ClientMessage", "None", 3.0)
+    print('--- text ksl message ---')
+    local ksl = StaticFindObject("/Script/Engine.Default__KismetSystemLibrary")
+    ksl:PrintString(nil, "Hello from PrintString", true, false, {R=0,G=255,B=0,A=255}, 5.0)
+
+    print('--- text debug message ---')
+    local engine = FindFirstOf("Engine")
+    engine:AddOnScreenDebugMessage(-1, 5.0, {R=0,G=255,B=0,A=255}, "Hello from DebugMessage")
+
+    print('--- text client message ---')
+    local pc = UEHelpers.GetPlayerController()
+    pc:ClientMessage("Hello from ClientMessage", "None", 3.0)
 
 end
 
