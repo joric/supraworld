@@ -24,6 +24,7 @@ local function fastTravel()
             if not widget or not widget:IsValid() then
                 widget = FindFirstOf("PlayerMapWidget_C") -- sl/siu
             end
+
             if not widget or not widget:IsValid() then return end
 
             local mapActor = FindFirstOf("PlayerMapActor_C")
@@ -37,20 +38,18 @@ local function fastTravel()
             local mapLocation = {}
             local ok = widget:GetMousePositionOnVirtualMap(virtualMap, mapLocation)
 
-            if ok and virtualMap.X ~= 0.0 or virtualMap.Y ~= 0.0 then
-                local worldX = (mapLocation.X - 0.5) * size + cx
-                local worldY = (mapLocation.Y - 0.5) * size + cy
-                local floorHeight = getFloorHeight(pc.Pawn, worldX, worldY)
-                local loc = {X = worldX, Y = worldY, Z = floorHeight + 100} -- above ground
+            if not ok or (virtualMap.X==0 and virtualMap.Y==0) then return end
 
-                pc.Pawn:K2_TeleportTo(loc, pc.Pawn:K2_GetActorRotation())
+            local worldX = (mapLocation.X - 0.5) * size + cx
+            local worldY = (mapLocation.Y - 0.5) * size + cy
+            local floorHeight = getFloorHeight(pc.Pawn, worldX, worldY)
+            local loc = {X = worldX, Y = worldY, Z = floorHeight + 100}
 
-                local comp = FindFirstOf("PlayerMapComponent_C")
-                if comp and comp:IsValid() then
-                    comp:UpdatePlayerLocationAndFog()
-                end
-            else
-                print('vmap is 0, cannnot teleport, try again')
+            pc.Pawn:K2_TeleportTo(loc, pc.Pawn:K2_GetActorRotation())
+
+            local comp = FindFirstOf("PlayerMapComponent_C")
+            if comp and comp:IsValid() then
+                comp:UpdatePlayerLocationAndFog()
             end
 
         end)
