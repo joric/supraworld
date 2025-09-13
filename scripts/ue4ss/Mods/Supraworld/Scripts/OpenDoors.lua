@@ -18,6 +18,7 @@ local function openDoor()
                 local method = parent[methodName]
                 if method and method:IsValid() then
                     method(parent)
+                    return
                 end
             end
         end
