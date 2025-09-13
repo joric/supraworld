@@ -13,9 +13,13 @@ local function openDoor()
     if hitObject and hitObject:IsValid() then
         print('--- hitObject---', hitObject:GetFullName())
         local parent = hitObject:GetOuter()
-        if parent and parent:IsValid() and parent["Open"] and parent["Open"]:IsValid() then
-            print("Opening door:", parent:GetFullName())
-            parent:Open()
+        if parent and parent:IsValid() then
+            for _, methodName in ipairs({"Open", "_Flip", "_Press", "PressUnpress", "Pickup"}) do
+                local method = parent[methodName]
+                if method and method:IsValid() then
+                    method(parent)
+                end
+            end
         end
     end
 end
