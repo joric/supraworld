@@ -36,6 +36,7 @@ local function fastTravel()
 
             local worldX = (mapLocation.X - 0.5) * mapActor.MapWorldSize + mapActor.MapWorldCenter.X
             local worldY = (mapLocation.Y - 0.5) * mapActor.MapWorldSize + mapActor.MapWorldCenter.Y
+
             local maxHeight = mapActor.CaptureHeight - mapActor.MapWorldCenter.Z + mapActor.MapWorldUpperLeft.Z
 
             local floorHeight = getFloorHeight(pc.Pawn, worldX, worldY, maxHeight)
