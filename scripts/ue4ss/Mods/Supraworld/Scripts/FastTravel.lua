@@ -14,7 +14,6 @@ local function fastTravel()
         return
     end
 
-    -- these lines really help
     pc:ClientFlushLevelStreaming()
     pc:ClientForceGarbageCollection()
 
