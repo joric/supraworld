@@ -2,4 +2,4 @@
 Supraworld/Plugins/GameFeatures/Supraworld/Supraworld/Content/Maps/Supraworld.umap
 
 [Texture]
-Supraworld/Plugins/Supra/PlayerMap/Content/Textures/T_SupraworldMap*.uasset
+Supraworld/Plugins/Supra/PlayerMap/Content/Textures/T_SupraworldMapV?Q?.uasset
