@@ -1,7 +1,6 @@
 @echo off
 
 rem download CUE4Parse.CLI here: https://github.com/joric/CUE4Parse.CLI
-rem assetlist.txt must have [Text] as a first line (ini header) to export files as json
 
 set exe=CUE4Parse.CLI.exe
 
