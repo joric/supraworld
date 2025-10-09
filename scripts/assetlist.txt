@@ -3,3 +3,9 @@ Supraworld/Plugins/GameFeatures/Supraworld/Supraworld/Content/Maps/Supraworld.um
 
 [Texture]
 Supraworld/Plugins/Supra/PlayerMap/Content/Textures/T_SupraworldMapV?Q?.uasset
+
+[Text]
+*ShopItem_*.uasset
+*Abilities*/Inventory_*.uasset
+*Abilities*/Equipment_*.uasset
+

@@ -2,12 +2,11 @@
 
 rem download CUE4Parse.CLI here: https://github.com/joric/CUE4Parse.CLI
 
-set exe=CUE4Parse.CLI.exe
-
-set gamePath=E:\Games\Supraworld\Supraworld.7925\Supraworld
-set mappings="%gamePath%\Binaries\Win64\ue4ss\Mappings.usmap"
-set paks="%gamePath%\Content\Paks"
+set exe=cue4parse
+set game=E:\Games\Supraworld\Supraworld.7925\Supraworld
+set mappings=%game%\Binaries\Win64\Mappings.usmap
 set out=C:\Temp\Exports
-set options=-d %paks% -m %mappings% -g GAME_UE5_6 -o %out%
 
-%exe% %options% -e -i %~dp0\assetlist.txt
+set opt=-i "%game%" -m "%mappings%" -g GAME_UE5_6 -o "%out%"
+
+%exe% %opt% -c assetlist.txt
