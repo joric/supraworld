@@ -203,7 +203,7 @@ if (typeof require !== 'undefined' && require.main === module) {
   console.time('loading gzip');
 
   for (fname of [
-    "../data/Supraworld.json.gz",
+    "../data/Supraworld.7925.json.gz",
   ]) {
     zlib.gunzip(fs.readFileSync(fname), (err, buffer) => {
       console.timeEnd('loading gzip');
