@@ -68,7 +68,7 @@
   "speed": {"class":"fa fa-bolt","bg":"limegreen"},
   "boomeraxe_range": {"class":"fa fa-hammer","bg":"red"},
   "translocator_cooldown": {"class":"fa fa-gun","bg":"limegreen"},
-  "barrel": {"class":"fa fa-database","bg":"grey"},
+  "barrel": {"class":"fa fa-database","bg":"chocolate"},
   "barrel_red": {"class":"fa fa-database","bg":"maroon"},
   "barrel_gold": {"class":"fa fa-database","bg":"goldenrod"},
   "bones": {"class":"fa fa-skull-crossbones","bg":"goldenrod"},
