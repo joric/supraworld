@@ -203,5 +203,5 @@
   "guard_target": {"class":"fa fa-location-crosshairs","bg":"red"},
   "dash_launcher": {"class":"fa fa-bolt","bg":"red"},
 
-  "spool":  {"class":"fa fa-database","bg":"tan"}
+  "spool":  {"class":"fa fa-database","bg":"chocolate"}
 }
