@@ -5,7 +5,7 @@ cd /d C:\Temp\Exports\Supraworld\Plugins\Supra\PlayerMap\Content\textures
 :: set options= -gamma 2.2 -- too dark
 set options=-colorspace RGB -auto-level -sigmoidal-contrast 3,0.5 -gamma 2.2
 
-set base=T_SupraworldMapV2Q
+set base=T_SupraworldMapV5Q
 
 rem Convert HDR to PNG with gamma correction
 magick %base%0.hdr %options% %temp%\out0.png
