@@ -201,5 +201,7 @@
   "rubber_band_target": {"class":"fa fa-street-view","bg":"palevioletred"},
   "guard_volume": {"class":"fa fa-person-military-pointing","bg":"red"},
   "guard_target": {"class":"fa fa-location-crosshairs","bg":"red"},
-  "dash_launcher": {"class":"fa fa-bolt","bg":"red"}
+  "dash_launcher": {"class":"fa fa-bolt","bg":"red"},
+
+  "spool":  {"class":"fa fa-database","bg":"tan"}
 }
