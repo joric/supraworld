@@ -128,7 +128,7 @@
   "button_floor": { "class": "fa fa-circle-stop", "color": "grey" },
   "button_pedestal": { "class": "fa fa-power-off", "color": "grey" },
   "button_ball": { "class": "fa fa-circle-dot", "color": "grey" },
-  "button_big": { "class": "fa fa-circle", "color": "grey" },
+  "button_big": { "class": "fa fa-circle", "color": "red" },
   "door-closed": { "class": "fa fa-cube", "color": "black" },
   "battery": { "class": "fa fa-battery-full", "color": "darkorange" },
   "key": { "class": "fa fa-key", "color": "darkgoldenrod" },
