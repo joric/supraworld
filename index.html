@@ -178,7 +178,7 @@ function splitCamelCase(s) {
 }
 
 function translate(s) {
-  return splitCamelCase(s.replace('_C','')).map(capitalize).join(' ');
+  return splitCamelCase(String(s).replace('_C','')).map(capitalize).join(' ');
 }
 
 function setClass(e, set, c) { set ? e.classList.add(c) : e.classList.remove(c);}
@@ -186,23 +186,47 @@ function toggleClass(e, c) { if (e.classList.contains(c)) { e.classList.remove(c
 function toggleNav(e) { let input = document.querySelector('#search-input'); toggleClass(e.parentElement, 'closed') ? input.blur() : input.focus();}
 function toggleVisibility(a) { [].forEach.call(a, function(e) { toggleClass(document.querySelector(e), 'collapsed'); }) }
 
-function getColor(typeName){
-  let color = iconData[ typeData[ typeName ]?.icon ]?.bg;
+function getLineColor(t){
+  let color = iconData[ t.icon ]?.color;
   return color;
 }
 
+
+function getTypeRecursive(o, prop, data, value) {
+  const parent = Object.fromEntries(Object.entries(data).filter(([k,v]) => typeof v !== 'object' || k=='replace'));
+  prop = {...(prop.icon ? {category_icon: prop.icon} : {}), ...prop, ...parent};
+
+  for (const[field, section] of Object.entries(data.match||{})) {
+    const value = o[field];
+    if (!value) continue;
+
+    // try exact match first (faster)
+    const entry = section[value];
+    if (entry) {
+      return getTypeRecursive(o, prop, entry, value);
+    }
+
+    /*
+    // no match, try regex over all entries
+    for (const [regex, entry] of Object.entries(section).sort(([,a],[,b])=>(b.weight??0)-(a.weight??0))) {
+      if (value.match(new RegExp(regex, "i"))) {
+        return getTypeRecursive(o, prop, entry, value);
+      }
+    }
+    */
+  }
+
+  return {category: value, ...prop};
+}
+
+function getType(o) {
+  return getTypeRecursive(o, {group: 'misc'}, {match: typeData});
+}
+
+/*
 function getType(feature) {
   let type = feature.properties.type;
   let prop = typeData[type];
-/*
-  if (prop && prop.material && feature.properties.material) {
-    newType = prop.material[feature.properties.material];
-    if (newType && typeData[newType]) {
-      prop = typeData[newType];
-      type = newType;
-    }
-  }
-*/
   let newType = prop && (prop.material?.[feature.properties.material] || prop.color?.[feature.properties.color] || prop.name?.[feature.properties.name]);
 
   if (typeData[newType]) {
@@ -212,8 +236,38 @@ function getType(feature) {
 
   return {...prop || {icon:'misc', group:'misc'}, type: type, title: (prop||{}).title || translate(feature.properties.type)};
 }
+*/
 
-const getIcon = f => getType(f).icon;
+/*
+  if (prop && prop.material && feature.properties.material) {
+    newType = prop.material[feature.properties.material];
+    if (newType && typeData[newType]) {
+      prop = typeData[newType];
+      type = newType;
+    }
+  }
+*/
+
+
+//const getIcon = f => getType(f).icon;
+
+function parseFAClass(faClass) {
+  const parts = faClass.trim().split(/\s+/);
+  const prefix = parts.find(p => p.startsWith('fa-') || p === 'fa')?.replace('fa-', '') || 'solid';
+  const iconName = parts.find(p => p.startsWith('fa-') && p !== 'fa' && p !== `fa-${prefix}`)?.replace('fa-', '');
+  const prefixMap = { solid: 'fas', regular: 'far', light: 'fal', thin: 'fat', duotone: 'fad', brands: 'fab' };
+  return { prefix: prefixMap[prefix] || 'fas', iconName };
+}
+
+function getIcon(t, useCategoryIcon) {
+  let iconRecord = iconData[useCategoryIcon && t.item ? (t.category_icon || t.icon) : t.icon] || {class: 'fa fa-circle-question'};
+  let fa = parseFAClass(iconRecord.class).iconName;
+  let bg = t.color || iconRecord.color || 'grey';
+  let fg = iconRecord.background || 'white';
+  return {fa: fa, bg :bg, fg:fg, image:iconRecord.image};
+}
+
+
 const getGroup = f =>getType(f).group;
 
 let mouseMoved = false;
@@ -228,6 +282,7 @@ function getBaseURL() {
 function getMapURL(id) { return getBaseURL() + '#' + encodeURIComponent(id); }
 
 function getWikiURL(title) {
+  title = title || 'UndefinedWikiTitle';
   if (title.startsWith('«') && title.endsWith('«')) title = title.slice(1,-1);
   let wikiPrefix = 'https://supraverse.fandom.com/wiki/';
   return wikiPrefix + encodeURIComponent(title);
@@ -250,17 +305,20 @@ function copyToClipboard(text) {
 }
 
 function getSubtitle(feature) {
-  let t = getType(feature);
   let o = feature.properties;
+  let t = getType(o);
   let s = '';
+
   if (o.spawns) {
-    s = getType({...feature, 'properties': {...o, 'type': o.spawns, 'name': o.name + ':spawns' }}).title;
+    let pt = getType({...o, 'type': o.spawns, 'name': o.name + ':spawns' });
+    s = pt.title || pt.category || 'Unnamed';
     s = s.replace(/ [+-]*\{.+\}(%*)/,''); // remove {} formatting
     if (s==t.title) s='';
   }
-  if (o.coins) return `${o.coins} coins`;
-  let title = o.text || o.achievement || s;
 
+  if (o.coins) return `${o.coins} coins`;
+
+  let title = o.text || o.achievement || s;
 
   if (!title) {
     if (o.area) title = o.area.replace('Supraworld.Area.','');
@@ -289,7 +347,7 @@ function popupOnClick(e) {
 
   const popup = document.querySelector('#popup-template').content.cloneNode(true);
 
-  let info = getType(feature);
+  let info = getType(o);
 
   let id = (info.title||'').replaceAll(' ','_');
   let backlink = getMapURL(id);
@@ -383,7 +441,7 @@ function applyHeightFactor(c) {
 }
 
 function addMarker(feature, options) {
-  let t = getType(feature);
+  let t = getType(feature.properties);
 
   //if (t.group=='misc' || t.group=='actors') return;
 
@@ -409,6 +467,7 @@ function addMarker(feature, options) {
   let opacity = settings.markedItems[getBaseName(feature.properties.name)] ? markedOpacity : 1;
 
   let line = new maptalks.LineString([[x,y,0],[x,y,z]], { symbol: { lineOpacity: opacity} });
+
   layers.lines = layers.lines||[];
   layers.lines.push(line);
   line.feature = feature;
@@ -430,7 +489,8 @@ function addMarker(feature, options) {
   gltf.feature = feature;
 */
 
-  let marker = new maptalks.Marker([x,y,z], { symbol: getSymbol(feature, opacity) });
+  let marker = new maptalks.Marker([x,y,z], { symbol: getSymbol(feature, opacity), cursor:'pointer' });
+
   marker.feature = feature; // leaflet uses marker.feature after loading geojson
 
   layers[t.group] = layers[t.group] || [];
@@ -458,12 +518,12 @@ function addMarker(feature, options) {
 
   //if (t.type =='Inventory_Toothpin_C') console.log(feature);
 
-  icons[t.type] = iconData[t.icon];
+  icons[t.category] = iconData[t.icon];
 
   counters[t.group] = counters[t.group] || {};
 
-  if (getBaseName(t.type)==t.type) {
-    counters[t.group][t.type] = (counters[t.group][t.type] || 0) + 1;
+  if (getBaseName(t.category)==t.category) {
+    counters[t.group][t.category] = (counters[t.group][t.category] || 0) + 1;
   }
 
   if (t.group=='misc') { marker.hide(); line.hide();}
@@ -507,8 +567,10 @@ function loadMarkersBatched(features, options) {
 
       let o = feature.properties;
 
+      let t = getType(o);
+
       if (o.spawns) {
-        batch.push(addMarker({...feature, properties: { name: o.name +':spawns', type: o.spawns}}, options));
+        batch.push(addMarker({...feature, properties: {name: o.name +':spawns', type: o.spawns }}, options));
       }
 
       if (o.target) {
@@ -519,23 +581,26 @@ function loadMarkersBatched(features, options) {
         let opacity = settings.markedItems[o.name] ? markedOpacity : 1;
 
         let points = parabola(start, end);
-        points = simplify(points, 5);
 
-        let line = new maptalks.LineString(points, { symbol: { lineOpacity: opacity, lineColor: getColor(o.type), lineWidth: 3 } });
+        points = simplify(points, 2);
+
+        let line = new maptalks.LineString(points, { symbol: { lineOpacity: opacity, lineColor: getLineColor(t), lineWidth: 3 } });
 
         let layers = options.layers;
         layers.lines = layers.lines||[];
         layers.lines.push(line);
         line.feature = feature;
       }
-
     }
+
     result.push(...batch);
+
     if (currentIndex < features.length) {
       setTimeout(processBatch, 0); // Allow time for browser events
     } else {
       addMarkers(result, options);
     }
+
   }
   setTimeout(processBatch, 0); // Start processing asynchronously
 }
@@ -660,12 +725,20 @@ function addMarkers(markers, options) {
     } else {
       new maptalks.PointLayer(name, geometries, {
         sceneConfig: { depthFunc: '<'},
+
+        //hitColor: [0, 0, 0, 0], // Color used for hit detection
+        //hitTolerance: 1 // Tolerance for hit detection
+
       }).addTo(groupLayer);
     }
   }
 
   // let tr = s=> typeData[s]?.title || (s[0].toUpperCase()+s.slice(1));
-  let tr = s=> typeData[s]?.title || translate(s);
+  //let tr = s=> typeData[s]?.title || translate(s);
+  //let tr = s=> getType({"type": s}).title || s; //getType({"type": s}).title || translate(s)
+
+  tr = s=> capitalize(getType({"type": s}).title || s);
+
   markersControl = new MarkersControl(counters, {theme: theme, icons: icons, weights:{collectible: 1, misc:-2, actors:-1}, groupCallback: toggleGroup, itemCallback: toggleItem, translate: tr });
 
   let name = mapParam.markerName;
@@ -1078,7 +1151,9 @@ window.onload = function(event) {
   Promise.all(promises).then(data => {
     [typeData, iconData] = data;
     iconData['misc'] = {"class": "fa-solid fa-circle-question", "bg": "grey"};
-    iconImages = Object.fromEntries(Object.entries(iconData).map(([k,v]) => [k, renderFAIconToImageURL(v.class, v.bg, v.fg, iconSize)]));
+
+    iconImages = Object.fromEntries(Object.entries(iconData).map(([k,v]) => [k, renderFAIconToImageURL(v.class, v.color, v.background, iconSize)]));
+
     loadMap(mapId);
   }).catch(error=>alert(`A network error occurred. This might be a CORS issue. Check the browser console for details.\n\nError: ${error}`));
 }
@@ -1154,8 +1229,8 @@ function updateItems() {
   for (const layer of groupLayer.getLayers()) {
     for (marker of layer._geoList) {
 
-      let t = getType(marker.feature);
-      let type = getBaseName(t.type);
+      let t = getType(marker.feature.properties);
+      let type = getBaseName(t.category);
 
       if (settings.activeItems[type]) {
         marker.show();
