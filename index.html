@@ -192,8 +192,9 @@ function getLineColor(t){
 }
 
 
-function getTypeRecursive(o, prop, data) {
+function getTypeRecursive(o, data, prop={}) {
   const parent = Object.fromEntries(Object.entries(data).filter(([k,v]) => typeof v !== 'object' || k=='replace'));
+
   prop = {...(prop.icon ? {category_icon: prop.icon} : {}), ...prop, ...parent};
 
   for (const[field, section] of Object.entries(data.match||{})) {
@@ -203,7 +204,7 @@ function getTypeRecursive(o, prop, data) {
     // try exact match first (faster)
     const entry = section[value];
     if (entry) {
-      return getTypeRecursive(o, {category: value, ...prop}, entry);
+      return getTypeRecursive(o, entry, {category: value, ...prop});
     }
 
     /*
@@ -212,7 +213,7 @@ function getTypeRecursive(o, prop, data) {
     regex_entries.sort(([,a],[,b])=>(b.weight??0)-(a.weight??0));
     for (const [regex, entry] of regex_entries) {
       if (value.match(new RegExp(regex, "i"))) {
-        return getTypeRecursive(o, {category: value, ...prop}, entry);
+        return getTypeRecursive(o, entry, {category: value, ...prop});
       }
     }
     */
@@ -223,7 +224,7 @@ function getTypeRecursive(o, prop, data) {
 }
 
 function getType(o) {
-  return getTypeRecursive(o, {group: 'misc'}, {match: typeData});
+  return getTypeRecursive(o, typeData);
 }
 
 /*
