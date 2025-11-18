@@ -210,7 +210,8 @@
 
   "spool": { "class": "fa fa-database", "color": "dimgrey" },
 
-  "translator": { "class": "fa fa-language", "color": "dimgrey" }
+  "translator": { "class": "fa fa-language", "color": "dimgrey" },
 
+  "playing_card": { "class": "fa fa-diamond", "color": "white", "background": "red"}
 
 }

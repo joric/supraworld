@@ -192,7 +192,7 @@ function getLineColor(t){
 }
 
 
-function getTypeRecursive(o, prop, data, value) {
+function getTypeRecursive(o, prop, data) {
   const parent = Object.fromEntries(Object.entries(data).filter(([k,v]) => typeof v !== 'object' || k=='replace'));
   prop = {...(prop.icon ? {category_icon: prop.icon} : {}), ...prop, ...parent};
 
@@ -203,20 +203,23 @@ function getTypeRecursive(o, prop, data, value) {
     // try exact match first (faster)
     const entry = section[value];
     if (entry) {
-      return getTypeRecursive(o, prop, entry, value);
+      return getTypeRecursive(o, {category: value, ...prop}, entry);
     }
 
     /*
     // no match, try regex over all entries
-    for (const [regex, entry] of Object.entries(section).sort(([,a],[,b])=>(b.weight??0)-(a.weight??0))) {
+    let regex_entries = Object.entries(section).filter(([k,v]) => k.includes("*") || k.includes("|") );
+    regex_entries.sort(([,a],[,b])=>(b.weight??0)-(a.weight??0));
+    for (const [regex, entry] of regex_entries) {
       if (value.match(new RegExp(regex, "i"))) {
-        return getTypeRecursive(o, prop, entry, value);
+        return getTypeRecursive(o, {category: value, ...prop}, entry);
       }
     }
     */
+
   }
 
-  return {category: value, ...prop};
+  return prop;
 }
 
 function getType(o) {
@@ -349,6 +352,8 @@ function popupOnClick(e) {
 
   let info = getType(o);
 
+  //console.log(info);
+
   let id = (info.title||'').replaceAll(' ','_');
   let backlink = getMapURL(id);
 
@@ -450,16 +455,30 @@ function addMarker(feature, options) {
   //console.log(feature.geometry.coordinates);
 
   let getSymbol = function(feature,opacity=1) {
-    return {
-      //markerFile   : 'js/lib/maptalks-gl/images/1.png',
-      markerFile   : iconImages[t.icon] || iconImages['misc'],
-      markerWidth  : iconSize,
-      markerHeight : iconSize,
-      markerDx     : 0,
-      markerDy     : 0,//-Math.round(iconSize/2),
-      markerOpacity: opacity,
-      //markerVerticalAlignment: 'middle',
-    };
+
+    return [
+      {
+        markerFile   : iconImages[t.icon]||iconImages['misc'],
+        markerWidth  : iconSize,
+        markerHeight : iconSize,
+        markerDx     : 0,
+        markerDy     : 0,//-Math.round(iconSize/2),
+        markerOpacity: opacity,
+        //markerVerticalAlignment: 'middle',
+      },
+      /*
+      {
+        markerFile   : iconImages['misc'],
+        markerWidth  : iconSize,
+        markerHeight : iconSize,
+        markerDx     : 0,
+        markerDy     : 0,//-Math.round(iconSize/2),
+        markerOpacity: opacity,
+        //markerVerticalAlignment: 'middle',
+      }
+      */
+    ];
+
   };
 
   let [layers,counters,icons] = [options.layers, options.counters, options.icons];

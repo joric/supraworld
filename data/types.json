@@ -255,7 +255,16 @@
     "FourLeafClover_C": { "icon": "clover", "group": "carriables", "title": "Four Leaf Clover" },
     "GarbageBug_C": { "icon": "trash", "group": "carriables", "title": "Garbage Bag" },
     "GreenTubeCap_C": { "icon": "cap", "group": "carriables", "title": "Green Tube Cap" },
-    "Key_C": { "icon": "key", "group": "carriables", "title": "Key" },
+
+    "Key_C": { "icon": "key", "group": "carriables", "title": "Key",
+      "match": {
+        "color": {
+          "ESupraColors::Magenta": { "color": "magenta" },
+          "ESupraColors::Yellow": { "color": "yellow" }
+        }
+      }
+    },
+
     "Piratehat_C": { "icon": "hat", "group": "carriables", "title": "Pirate Hat" },
     "Popcorn_C": { "icon": "popcorn", "group": "carriables", "title": "Popcorn" },
     "Respirator_C": { "icon": "gas_mask", "group": "carriables", "title": "Gas Mask" },
@@ -430,6 +439,11 @@
     "DashLauncher_C": { "icon": "dash_launcher", "group": "teleports", "title": "Dash Launcher" },
     "DashLauncher_C:target": { "icon": "jumppad_target", "group": "teleports", "title": "Jump Target" },
 
-    "Pickup_Thread_C": { "icon": "spool", "group": "collectible", "title": "Spool of Thread" }
+    "Pickup_Thread_C": { "icon": "spool", "group": "collectible", "title": "Spool of Thread" },
+
+    "DoorSlideCard_1_C": { "icon": "playing_card", "group": "items", "category": "Playing Card", "title": "Playing Card" },
+    "DoorSlideCard_2_C": { "icon": "playing_card", "group": "items", "category": "Playing Card", "title": "Playing Card" },
+    "DoorSlideCard_3_C": { "icon": "playing_card", "group": "items", "category": "Playing Card", "title": "Playing Card" },
+    "DoorSlideCard_4_C": { "icon": "playing_card", "group": "items", "category": "Playing Card", "title": "Playing Card" }
   }
 }
