@@ -192,68 +192,39 @@ function getLineColor(t){
 }
 
 
-function getTypeRecursive(o, data, prop={}) {
-  const parent = Object.fromEntries(Object.entries(data).filter(([k,v]) => typeof v !== 'object' || k=='replace'));
-
-  prop = {...(prop.icon ? {category_icon: prop.icon} : {}), ...prop, ...parent};
-
-  for (const[field, section] of Object.entries(data.match||{})) {
-    const value = o[field];
-    if (!value) continue;
-
-    // try exact match first (faster)
-    const entry = section[value];
-    if (entry) {
-      return getTypeRecursive(o, entry, {category: value, ...prop});
-    }
-
-    /*
-    // no match, try regex over all entries
-    let regex_entries = Object.entries(section).filter(([k,v]) => k.includes("*") || k.includes("|") );
-    regex_entries.sort(([,a],[,b])=>(b.weight??0)-(a.weight??0));
-    for (const [regex, entry] of regex_entries) {
-      if (value.match(new RegExp(regex, "i"))) {
-        return getTypeRecursive(o, entry, {category: value, ...prop});
-      }
-    }
-    */
-
-  }
-
-  return prop;
-}
-
 function getType(o) {
-  return getTypeRecursive(o, typeData);
-}
+  function getTypeRecursive(data, t={}) {
+    const prop = Object.fromEntries(Object.entries(data).filter(([k,v]) => typeof v !== 'object' || k=='replace'));
 
-/*
-function getType(feature) {
-  let type = feature.properties.type;
-  let prop = typeData[type];
-  let newType = prop && (prop.material?.[feature.properties.material] || prop.color?.[feature.properties.color] || prop.name?.[feature.properties.name]);
-
-  if (typeData[newType]) {
-    prop = typeData[newType];
-    type = newType;
-  }
-
-  return {...prop || {icon:'misc', group:'misc'}, type: type, title: (prop||{}).title || translate(feature.properties.type)};
-}
-*/
-
-/*
-  if (prop && prop.material && feature.properties.material) {
-    newType = prop.material[feature.properties.material];
-    if (newType && typeData[newType]) {
-      prop = typeData[newType];
-      type = newType;
+    if (prop.icon && !prop.category) {
+      t.category_icon = t.icon;
     }
+
+    for (const[field, section] of Object.entries(data.match||{})) {
+      const value = o[field];
+      if (!value) continue;
+
+      // try exact match first (faster)
+      const entry = section[value];
+      if (entry) {
+        return getTypeRecursive(entry, {...t, category: value, ...prop});
+      }
+
+      /*
+      // no match, try regex over presorted entries (VERY SLOW, need to speed it up!)
+      for (const [regex, entry] of Object.entries(section).filter(s=>/[^A-Za-z0-9_]/.test(s)).sort(([,a],[,b])=>(b.weight??0)-(a.weight??0))) {
+        if (value.match(new RegExp(regex, "i"))) {
+          return getTypeRecursive(entry, {...t, category: value, ...prop});
+        }
+      }
+      */
+
+    }
+    return {...t, ...prop};
   }
-*/
 
-
-//const getIcon = f => getType(f).icon;
+  return getTypeRecursive(typeData);
+}
 
 function parseFAClass(faClass) {
   const parts = faClass.trim().split(/\s+/);
@@ -270,7 +241,6 @@ function getIcon(t, useCategoryIcon) {
   let fg = iconRecord.background || 'white';
   return {fa: fa, bg :bg, fg:fg, image:iconRecord.image};
 }
-
 
 const getGroup = f =>getType(f).group;
 
