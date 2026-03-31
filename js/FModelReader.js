@@ -92,7 +92,7 @@ function markerLoader(data) {
 
   function toRad(x) { return THREE.Math.degToRad(x); }
   function getVec(v,t) { return v ? new THREE.Vector3(v.X, v.Y, v.Z) : new THREE.Vector3(t,t,t); }
-  function getRot(v) { return v ? new THREE.Vector3(toRad(v.Roll), toRad(v.Pitch), toRad(v.Yaw) ) : new THREE.Vector3() }
+  function getRot(v) { return v ? new THREE.Vector3(-toRad(v.Roll), -toRad(v.Pitch), toRad(v.Yaw) ) : new THREE.Vector3() }
   function getQuat(v) { return v ? new THREE.Quaternion(v.X, v.Y, v.Z, v.W) : new THREE.Quaternion(); }
 
   function makeRotationFromEuler(r) {
