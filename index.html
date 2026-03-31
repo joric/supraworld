@@ -764,6 +764,17 @@ function parseSearchOptions(line) {
   return result;
 }
 
+function showRelatedMarkers(name) {
+  let groupLayer = map.getLayer('GroupGLLayer');
+  for (const layer of groupLayer.getLayers()) {
+    for (marker of layer._geoList) {
+      let alias = getBaseName(name);
+      if (alias==getBaseName(marker.feature.properties.name)) {
+        marker.show();
+      }
+    }
+  }
+}
 
 function searchByTitle(title) {
   let term = title.toLowerCase();
@@ -803,6 +814,7 @@ function searchByTitle(title) {
 
   if (counter==1 && selectedMarker) {
     let marker = selectedMarker;
+    showRelatedMarkers(marker.feature.properties.name);
     popupOnClick({target: marker});
     marker.openInfoWindow();
   }
