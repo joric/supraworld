@@ -418,7 +418,7 @@
       "Jumppad_C": { "icon": "jumppad", "group": "teleports", "title": "Jump Pad" },
       "Jumppad_C:target": { "icon": "jumppad_target", "group": "teleports", "title": "Jump Target" },
 
-      "Jumppad_TwoPath_C": { "icon": "jumppad", "group": "teleports", "title": "Jump Pad Dual" },
+      "Jumppad_TwoPath_C": { "icon": "jumppad", "group": "teleports", "title": "Jump Pad Two Path" },
       "Jumppad_TwoPath_C:target": { "icon": "jumppad_target", "group": "teleports", "title": "Jump Target" },
 
       "LaunchBox_C": { "icon": "launchbox", "group": "teleports", "title": "Launch Box" },
