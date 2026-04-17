@@ -19,6 +19,8 @@ async function loadGzip(url, callback, batchSize = 16 * 1024 * 1024) {
   const decoder = new TextDecoder();
   let result = '';
   let buffer = '';
+  let isFirstChunk = true;
+  
   function pump() {
     reader.read().then(({ done, value }) => {
       if (done) {
@@ -27,7 +29,19 @@ async function loadGzip(url, callback, batchSize = 16 * 1024 * 1024) {
         callback(result);
         return;
       }
-      buffer += decoder.decode(value, { stream: true });
+      
+      let chunk = decoder.decode(value, { stream: true });
+      
+      // Strip BOM from the first chunk only
+      if (isFirstChunk && chunk.length > 0) {
+        if (chunk.charCodeAt(0) === 0xFEFF || chunk[0] === '\uFEFF') {
+          chunk = chunk.slice(1);
+        }
+        isFirstChunk = false;
+      }
+      
+      buffer += chunk;
+      
       if (buffer.length >= batchSize) {
         result += buffer;
         buffer = '';
@@ -203,7 +217,7 @@ if (typeof require !== 'undefined' && require.main === module) {
   console.time('loading gzip');
 
   for (fname of [
-    "../data/Supraworld.7925.json.gz",
+    "../data/Supraworld.10596.json.gz",
   ]) {
     zlib.gunzip(fs.readFileSync(fname), (err, buffer) => {
       console.timeEnd('loading gzip');

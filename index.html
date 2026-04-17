@@ -37,6 +37,7 @@
 
 <script src="js/three-onlymath.min.js"></script>
 <script src="js/FModelReader.js"></script>
+<script src="js/UE5Reader.js"></script>
 <script src="js/simplify.js"></script>
 
 <template id="popup-template">
@@ -127,6 +128,7 @@ let maps = {
       '7876': { date: '2025-09-06', tiles: 'tiles/sw/V4/{z}/{x}/{y}.jpg', data: 'data/Supraworld.7876.json.gz'},
       '7925': { date: '2025-09-08', tiles: 'tiles/sw/V4/{z}/{x}/{y}.jpg', data: 'data/Supraworld.7925.json.gz'},
       '9016': { date: '2025-11-14', tiles: 'tiles/sw/V5/{z}/{x}/{y}.jpg', data: 'data/Supraworld.9016.json.gz'},
+     '10596': { date: '2026-04-08', tiles: 'tiles/sw/V8/{z}/{x}/{y}.jpg', data: 'data/markers.sw.json'}, // TODO file is too large now
     },
    },
 
@@ -298,7 +300,13 @@ function getSubtitle(feature) {
     if (o.progression) title += ' (' + o.progression.replace('Supraworld.Story.','') + ')';
   }
 
-  if (o.abilities) title += ' [' + (o.abilities.map(s=>(s+'').split('.').pop()).join(',')) +']';
+  if (o.abilities) {
+    let obj = o.abilities;
+    if (typeof obj === 'string') {
+        obj = obj.split(',').map(item => item.trim());
+    }
+    title += ' [' + (obj.map(s=>(s+'').split('.').pop()).join(',')) +']';
+  }
 
   if (o.color) title += ' (' + (o.color+'').split('::').pop() +')';
 
@@ -426,7 +434,8 @@ function addMarker(feature, options) {
 
   let getSymbol = function(feature,opacity=1) {
 
-    return [
+    var symbol = 
+
       {
         markerFile   : iconImages[t.icon]||iconImages['misc'],
         markerWidth  : iconSize,
@@ -435,21 +444,11 @@ function addMarker(feature, options) {
         markerDy     : 0,//-Math.round(iconSize/2),
         markerOpacity: opacity,
         //markerVerticalAlignment: 'middle',
-      },
-      /*
-      {
-        markerFile   : iconImages['misc'],
-        markerWidth  : iconSize,
-        markerHeight : iconSize,
-        markerDx     : 0,
-        markerDy     : 0,//-Math.round(iconSize/2),
-        markerOpacity: opacity,
-        //markerVerticalAlignment: 'middle',
-      }
-      */
-    ];
+      };
 
-  };
+    return symbol;
+
+  }
 
   let [layers,counters,icons] = [options.layers, options.counters, options.icons];
 
@@ -555,18 +554,18 @@ function loadMarkersBatched(features, options) {
       batch.push(marker);
 
       let o = feature.properties;
-
       let t = getType(o);
 
       if (o.spawns) {
         batch.push(addMarker({...feature, properties: {name: o.name +':spawns', type: o.spawns }}, options));
       }
 
-      if (o.target) {
-        batch.push(addMarker({...feature, geometry: {coordinates: o.target}, properties: {name: o.name +':target', type: o.type + ':target' }}, options));
+      let targets = o.target ? [o.target] : (o.targets ? o.targets : []);
+      for (const target of targets) {
+        batch.push(addMarker({...feature, geometry: {coordinates: target}, properties: {name: o.name +':target', type: o.type + ':target' }}, options));
 
         let start = applyHeightFactor(feature.geometry.coordinates);
-        let end = applyHeightFactor(o.target);
+        let end = applyHeightFactor(target);
         let opacity = settings.markedItems[o.name] ? markedOpacity : 1;
 
         let points = parabola(start, end);
@@ -580,6 +579,7 @@ function loadMarkersBatched(features, options) {
         layers.lines.push(line);
         line.feature = feature;
       }
+
     }
 
     result.push(...batch);
@@ -594,7 +594,7 @@ function loadMarkersBatched(features, options) {
   setTimeout(processBatch, 0); // Start processing asynchronously
 }
 
-function loadMarkers(data, mapId) {
+function loadMarkers(data, mapId, legacy=true) {
 
   let area = mapId;
 
@@ -602,18 +602,18 @@ function loadMarkers(data, mapId) {
 
   let options = {layers: {}, counters: counters, icons: {}};
 
-  if (mapId!='sw') {
+  if (legacy) {
     let features = [];
     for (o of data) {
       let [x,y,z] = [o.lng, o.lat, o.alt];
       let c = [x,y,z];
       let feature = {type: 'Feature', geometry: {type: 'Point', coordinates: c}, properties: o};
+      if (o.type && typeof o.type === 'string' && o.type.includes(':')) o.type = o.type.split(':')[1]; // cut off ':' prefixes
       features.push(feature);
     }
     data = features;
   }
 
-/*
   for (feature of data) {
     addMarker(feature, options);
     let o = feature.properties;
@@ -621,7 +621,6 @@ function loadMarkers(data, mapId) {
       addMarker({...feature, 'properties': {...feature.properties, 'type': o.spawns}}, options);
     }
   }
-*/
 
   loadMarkersBatched(data, options);
 }
@@ -1035,7 +1034,6 @@ function loadMap(mapId) {
 
   let compassControl = new maptalks.control.Compass({position  : 'bottom-right'}).addTo(map)._compass.onclick = (e)=>map.getBearing()==0 && map.animateTo({ pitch: map.getPitch()==0 ? defaultPitch : 0 })
 
-
   searchControl = new SearchControl(null, {theme:theme});
   searchControl._handleSubmit = function() {
     location.hash = '';
@@ -1045,15 +1043,22 @@ function loadMap(mapId) {
   searchControl._input.setAttribute('placeholder', gameTitle);
 
   if (mapId=='sw') {
-    loadGzip(config.versions?.[settings.version]?.data||config.data, data => {
-      loadMarkers(markerLoader(JSON.parse(data)), mapId);
+    let filename = config.versions?.[settings.version]?.data||config.data;
+    if (filename.endsWith('.json')) {
+      fetch(`data/markers.${mapId}.json`).then(r=>r.json()).then(data=>{
+        loadMarkers(data, mapId);
+      })
+      return;
+    }
+    loadGzip(filename, data => {
+      loadMarkers(markerLoader(JSON.parse(data)), mapId, false);
     });
     return;
   }
 
   fetch(dataPrefix + `data/markers.${mapId}.json`).then(r=>r.json()).then(data=>{
     //console.log('loaded', data.features.length, 'markers');
-    loadMarkers(data, mapId);
+    loadMarkers(data, mapId, true);
   })
 }
 
@@ -1267,6 +1272,60 @@ function markItems() {
   }
 }
 
+function importSaveFileExt2() {
+  var file = document.querySelector("#game_file").files[0];
+  if (file) {
+
+    var reader = new FileReader();
+    reader.readAsArrayBuffer(file, "UTF-8");
+    reader.onload = function (evt) {
+
+    let data = evt.target.result;
+    evt.target.value = null;
+
+    let loadedSave;
+
+    try {
+
+      loadedSave = new UESaveObject(evt.target.result);
+
+/////////////
+    let count = 0;
+    for (let section of ["ThingsToRemove", "ThingsToActivate", "ThingsToOpenForever"]) {
+      for (o of loadedSave.Properties) {
+        if (o.name != section) {
+          continue;
+        }
+        for(x of o.value.value) {
+          let name = x.split(".").pop();
+          let area = x.split("/").pop().split('.')[0];
+          if (name != "None") {
+            name = name.charAt(0).toUpperCase() + name.slice(1);
+            //let id = area + ':' + name;
+            let id = name; // NB! we don't really need area name in supraworld
+            if (!settings.markedItems[name]) count += 1;
+            settings.markedItems[id] = true;
+          }
+        }
+      }
+    }
+
+/////////
+        markItems();
+        saveSettings();
+
+        setTimeout(()=>alert(`Marked ${count} items.`),0);
+
+      } catch(e) {
+        console.log(e);
+      }
+
+    }
+    reader.onerror = function (evt) {
+      alert('error reading file');
+    }
+  }
+}
 
 function importSaveFileExt() {
   var file = document.querySelector("#game_file").files[0];
@@ -1276,6 +1335,7 @@ function importSaveFileExt() {
     reader.onload = function (evt) {
       let data = evt.target.result;
       evt.target.value = null;
+
       try {
 
         gameData = JSON.parse(data);
@@ -1299,6 +1359,8 @@ function importSaveFileExt() {
       } catch(e) {
         console.log(e);
       }
+
+
     }
     reader.onerror = function (evt) {
       alert('error reading file');
@@ -1313,11 +1375,12 @@ function copySavePath(e) {
 }
 
 function importSaveFile() {
+  let binarySave = settings.version=='10596';
   document.querySelector('#game_file').onchange = function(e) {
-    importSaveFileExt();
+    binarySave ? importSaveFileExt2() : importSaveFileExt();
   }
   document.querySelector('#game_file').value = null;
-  document.querySelector('#game_file').accept = '.json';
+  document.querySelector('#game_file').accept = binarySave ? '.sav' : '.json';
   document.querySelector('#game_file').click();
 }
 

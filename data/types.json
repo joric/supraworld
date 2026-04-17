@@ -257,7 +257,7 @@
       "Corn_C": { "icon": "corn", "group": "carriables", "title": "Corn" },
       "Die_C": { "icon": "die", "group": "carriables", "title": "Die" },
       "FourLeafClover_C": { "icon": "clover", "group": "carriables", "title": "Four Leaf Clover" },
-      "GarbageBug_C": { "icon": "trash", "group": "carriables", "title": "Garbage Bag" },
+      "GarbageBag_C": { "icon": "trash", "group": "carriables", "title": "Garbage Bag" },
       "GreenTubeCap_C": { "icon": "cap", "group": "carriables", "title": "Green Tube Cap" },
 
       "Key_C": { "icon": "key", "group": "carriables", "title": "Key",
@@ -348,6 +348,8 @@
         "match": { "material": { "Metal_Base_Golden": { "icon": "screw-gold", "group": "items", "title": "Gold Screw", "category": "Gold Screw" } } }
       },
 
+      "GoldenScrew_C": {"icon": "screw-gold", "group": "items", "title": "Gold Screw", "category": "Gold Screw" },
+
       "CornerMetalScrew_C": { "icon": "screw", "group": "misc", "title": "Corner Screw" },
       "Tack_C": { "icon": "tack", "group": "misc", "title": "Tack" },
       "SupraVolumeBase_C": { "icon": "trigger_volume", "group": "misc", "title": "Volume Base" },
@@ -416,10 +418,13 @@
       "Jumppad_C": { "icon": "jumppad", "group": "teleports", "title": "Jump Pad" },
       "Jumppad_C:target": { "icon": "jumppad_target", "group": "teleports", "title": "Jump Target" },
 
+      "LaunchBox_C": { "icon": "jumppad", "group": "teleports", "title": "Launch Box" },
+      "LaunchBox_C:target": { "icon": "jumppad_target", "group": "teleports", "title": "Launch Box Target" },
+
       "Balloon_C": { "icon": "balloon", "group": "items", "title": "Balloon" },
       "Balloon_C:target": { "icon": "jumppad_target", "group": "items", "title": "Balloon Target" },
 
-      "RubberBand_C": { "icon": "rubber_band", "group": "teleports", "category": "Rubber Band", "title": "Rubber Band" },
+      "RubberBand_C": { "icon": "rubber_band", "group": "teleports", "title": "Rubber Band" },
       "RubberBand_C:target": { "icon": "rubber_band_target", "group": "teleports", "title": "Jump Target" },
 
       "WobbleSpring_C": { "icon": "spring", "group": "teleports", "title": "Spring" },
@@ -434,7 +439,7 @@
       "LaunchVolume_C": { "icon": "launch_volume", "group": "teleports", "title": "Launch Volume" },
       "LaunchVolume_C:target": { "icon": "launch_target", "group": "teleports", "title": "Launch Target" },
 
-      "RubberBand_CustomDeform_C": { "icon": "rubber_band_custom", "group": "teleports", "category": "Rubber Band", "title": "Custom Rubber Band" },
+      "RubberBand_CustomDeform_C": { "icon": "rubber_band_custom", "group": "teleports", "title": "Rubber Band Custom" },
       "RubberBand_CustomDeform_C:target": { "icon": "rubber_band_target", "group": "teleports", "title": "Jump Target" },
 
       "EncroachVolume_C": { "icon": "launch_volume", "group": "teleports", "title": "Encroach Volume" },

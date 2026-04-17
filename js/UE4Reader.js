@@ -276,7 +276,7 @@ if (typeof require !== 'undefined' && require.main === module) {
       console.log(err);
     } else {
       let loadedSave = new UESaveObject(buf.buffer);
-      //require('fs').writeFileSync('save.json', JSON.stringify(loadedSave,null,2));
+      require('fs').writeFileSync('save.json', JSON.stringify(loadedSave,null,2));
       for (o of loadedSave.Properties) {
         if (o.name == 'Player Position') {
           console.log(JSON.stringify(o, null, 2));
