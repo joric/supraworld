@@ -197,6 +197,8 @@
   "spring_target": { "class": "fa fa-street-view", "color": "dodgerblue" },
   "jumppad": { "class": "fa fa-circle-chevron-up", "color": "red" },
   "jumppad_target": { "class": "fa fa-street-view", "color": "red" },
+  "launchbox": { "class": "fa fa-circle-chevron-up", "color": "chocolate" },
+  "launchbox_target": { "class": "fa fa-street-view", "color": "chocolate" },
   "launch_volume": { "class": "fa fa-cube", "color": "grey" },
   "launch_target": { "class": "fa fa-location-crosshairs", "color": "grey" },
   "princess_volume": { "class": "fa fa-cube", "color": "orchid" },
