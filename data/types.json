@@ -128,7 +128,7 @@
       "CoinBig_C": { "icon": "coinBig", "group": "collectible", "title": "Big Coin" },
       "CoinRed_C": { "icon": "coinRed", "group": "collectible", "title": "Red Coin" },
       "Coin_C": { "icon": "coin", "group": "collectible", "title": "Coin" },
-      "5Cent_C": { "icon": "coin", "group": "misc", "title": "5 Cent" },
+      "5Cent_C": { "icon": "coin", "group": "collectible", "title": "5 Cent" },
       "StolenCoins_C": { "icon": "collectible", "group": "coins" },
       "DeadHero_C": { "icon": "hero_placeholder", "group": "collectible", "title": "Dead Hero" },
       "DestroyablePots_C": { "icon": "pots", "group": "collectible", "title": "Destroyable Pots" },
