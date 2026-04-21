@@ -128,8 +128,8 @@ let maps = {
       '7876': { date: '2025-09-06', tiles: 'tiles/sw/V4/{z}/{x}/{y}.jpg', data: 'data/Supraworld.7876.json.gz'},
       '7925': { date: '2025-09-08', tiles: 'tiles/sw/V4/{z}/{x}/{y}.jpg', data: 'data/Supraworld.7925.json.gz'},
       '9016': { date: '2025-11-14', tiles: 'tiles/sw/V5/{z}/{x}/{y}.jpg', data: 'data/Supraworld.9016.json.gz'},
-     //'10596': { date: '2026-04-08', tiles: 'tiles/sw/V8/{z}/{x}/{y}.jpg', data: 'data/Supraworld.10596.json.gz'},
-     '10596': { date: '2026-04-08', tiles: 'tiles/sw/V8/{z}/{x}/{y}.jpg', data: 'data/markers.sw.json'}, // TODO file is too large now
+      //'10596': { date: '2026-04-08', tiles: 'tiles/sw/V8/{z}/{x}/{y}.jpg', data: 'data/Supraworld.10596.json.gz'}, // TODO file is too large now
+      '10596': { date: '2026-04-08', tiles: 'tiles/sw/V8/{z}/{x}/{y}.jpg', data: 'data/markers.sw.json'}, 
     },
    },
 
@@ -1051,9 +1051,9 @@ function loadMap(mapId) {
       })
       return;
     }
-    console.log('loading gzip now...');
+    console.log('loading gzip...');
     loadGzip(filename, buffer => {
-      console.log(`parsing buffer now (${buffer.length} bytes)...`);
+      console.log(`parsing buffer (${buffer.length} bytes)...`);
       parseLargeJSONArray(buffer).then(data => {
         loadMarkers(markerLoader(data), mapId, false);
       });
