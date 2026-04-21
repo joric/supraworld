@@ -181,7 +181,13 @@ function markerLoader(data) {
 
       if (((c = p.Color) || (c = p.Color_Initial) || (c = p.ButtonColor) || (c = p.LiquidColor)) && typeof c === 'string') prop.color = c;
 
-      let text = collectStrings(p.CharacterTalk);
+      let text = collectStrings(p.CharacterTalk||p.ThoughtHint);
+
+      if (o.Name=='Ghost_C_UAID_FC3497C34610199302_1972815852') {
+        console.log(text);
+      }
+
+
       if (text && text.length) prop.text = text;
 
       if (p.Achievement?.TagName) prop.achievement = p.Achievement.TagName.split('.').pop();
