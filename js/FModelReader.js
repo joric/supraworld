@@ -64,6 +64,10 @@ function markerLoader(data) {
   let targets = {};
   let components = {};
 
+  const getObjectName = t => t.ObjectName.split("'")[1];
+  const getAssetName = t => t.AssetPathName.split(".")[1];
+  const getName = t => t.ObjectName ? getObjectName(t) : getAssetName(t);
+
   function getMatrix(o, matrix) {
     matrix = matrix || new THREE.Matrix4();
     if (p = o.Properties) {
@@ -71,6 +75,7 @@ function markerLoader(data) {
         //console.log(o, p.RelativeLocation);
         matrix.premultiply(locRotScale(getVec(p.RelativeLocation), getRot(p.RelativeRotation), getVec(p.RelativeScale3D, 1)));
       }
+
       for (parent of ['RootObject', 'RootComponent', 'DefaultSceneRoot', 'AttachParent']) {
         if ((node = p[parent]) && (s = node.ObjectName)) {
           let d = s.split("'")[1].split(':')[1].split('.')
@@ -116,19 +121,32 @@ function markerLoader(data) {
   }
 
   for (const o of data) {
-    let outer = o.Outer + '.' + o.Name;
-    outers[outer] = o;
+    let outer = o.Outer;
+
+    // new fmodel outer format
+    if (o.Outer && o.Outer.ObjectName) {
+      let ob = getObjectName(o.Outer);
+      if (ob) {
+        outer =  ob.split(".")[1];
+      }
+    }
+
+    let outerPath = outer + '.' + o.Name;
+
+    outers[outerPath] = o;
+
     if ((p = o.Properties) && (a = p.WorldAsset) && (n = a.AssetPathName) && (t = p.LevelTransform)) {
       let key = n.split('.').pop();
       let m = new THREE.Matrix4().compose(getVec(t.Translation, 0), getQuat(t.Rotation), new THREE.Vector3(1,1,1));
       areas[key] = m
     }
-    if (o.Type=='StaticMeshComponent') meshes[o.Outer] = o;
-    if (o.Type=='MessengerComponent') messengers[o.Outer] = o;
-    if (o.Type=='SupraworldLaunchComponent_C') targets[o.Outer] = o;
 
-    components[o.Outer] = components[o.Outer] || {};
-    components[o.Outer][o.Name] = o;
+    if (o.Type=='StaticMeshComponent') meshes[outer] = o;
+    if (o.Type=='MessengerComponent') messengers[outer] = o;
+    if (o.Type=='SupraworldLaunchComponent_C') targets[outer] = o;
+
+    components[outer] = components[outer] || {};
+    components[outer][o.Name] = o;
   }
 
   let features = [];
@@ -142,10 +160,6 @@ function markerLoader(data) {
     if (c.x==0 && c.y==0 && c.z==0) continue;
 
     let feature = {'type': 'Feature', 'geometry': {'type': 'Point', 'coordinates': [c.x, c.y, c.z]}, 'properties': {'name': o.Name, 'type': o.Type}};
-
-    const getObjectName = t => t.ObjectName.split("'")[1];
-    const getAssetName = t => t.AssetPathName.split(".")[1];
-    const getName = t => t.ObjectName ? getObjectName(t) : getAssetName(t);
 
     let prop = feature.properties;
     const collectStrings = t => t?.SourceString ? [t.SourceString] : (t && typeof t === 'object' ? Object.values(t).flatMap(collectStrings): []);

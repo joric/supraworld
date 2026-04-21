@@ -128,8 +128,7 @@ let maps = {
       '7876': { date: '2025-09-06', tiles: 'tiles/sw/V4/{z}/{x}/{y}.jpg', data: 'data/Supraworld.7876.json.gz'},
       '7925': { date: '2025-09-08', tiles: 'tiles/sw/V4/{z}/{x}/{y}.jpg', data: 'data/Supraworld.7925.json.gz'},
       '9016': { date: '2025-11-14', tiles: 'tiles/sw/V5/{z}/{x}/{y}.jpg', data: 'data/Supraworld.9016.json.gz'},
-      //'10596': { date: '2026-04-08', tiles: 'tiles/sw/V8/{z}/{x}/{y}.jpg', data: 'data/Supraworld.10596.json.gz'}, // TODO file is too large now
-      '10596': { date: '2026-04-08', tiles: 'tiles/sw/V8/{z}/{x}/{y}.jpg', data: 'data/markers.sw.json'}, 
+      '10596': { date: '2026-04-08', tiles: 'tiles/sw/V8/{z}/{x}/{y}.jpg', data: 'data/Supraworld.10596.json.gz'},
     },
    },
 
@@ -609,18 +608,10 @@ function loadMarkers(data, mapId, legacy=true) {
       let [x,y,z] = [o.lng, o.lat, o.alt];
       let c = [x,y,z];
       let feature = {type: 'Feature', geometry: {type: 'Point', coordinates: c}, properties: o};
-      if (o.type && typeof o.type === 'string' && o.type.includes(':')) o.type = o.type.split(':')[1]; // cut off ':' prefixes
+      if (o.type && typeof o.type === 'string' && o.type.includes(':')) o.type = o.type.split(':')[1]; // cut off ':' prefixes NB! new format?
       features.push(feature);
     }
     data = features;
-  }
-
-  for (feature of data) {
-    addMarker(feature, options);
-    let o = feature.properties;
-    if (o.spawns) {
-      addMarker({...feature, 'properties': {...feature.properties, 'type': o.spawns}}, options);
-    }
   }
 
   loadMarkersBatched(data, options);
@@ -1047,7 +1038,7 @@ function loadMap(mapId) {
     let filename = config.versions?.[settings.version]?.data||config.data;
     if (filename.endsWith('.json')) {
       fetch(`data/markers.${mapId}.json`).then(r=>r.json()).then(data=>{
-        loadMarkers(data, mapId);
+        loadMarkers(data, mapId, true);
       })
       return;
     }
@@ -1245,6 +1236,7 @@ function updateItems() {
 
       if (settings.activeItems[type]) {
         marker.show();
+        //console.log('show', marker.feature.properties.name);
       } else {
         marker.hide();
       }
