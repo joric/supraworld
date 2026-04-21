@@ -17,8 +17,8 @@
 
 <template id="remote">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/js/all.min.js"></script>
-  <link  href="https://cdn.jsdelivr.net/npm/maptalks-gl@0.111.0/dist/maptalks-gl.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/maptalks-gl@0.111.0/dist/maptalks-gl.min.js"></script>
+  <link  href="https://cdn.jsdelivr.net/npm/maptalks-gl@0.124.4/dist/maptalks-gl.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/maptalks-gl@0.124.4/dist/maptalks-gl.min.js"></script>
   <link href="https://joric.github.io/maps/src/controls/search-control/search-control.css" rel="stylesheet">
   <script src="https://joric.github.io/maps/src/controls/search-control/search-control.js"></script>
   <link href="https://joric.github.io/maps/src/controls/markers-control/markers-control.css" rel="stylesheet">
@@ -315,6 +315,31 @@ function getSubtitle(feature) {
   return title
 }
 
+function customAnimateTo(map, targetView, duration = 200) {
+    const startView = { pitch: map.getPitch() };
+    const startTime = performance.now();
+    function animate(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(1, elapsed / duration);
+        const pitch = startView.pitch + (targetView.pitch - startView.pitch) * progress;
+        map.setView({pitch: pitch});
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        }
+    }
+    requestAnimationFrame(animate);
+}
+
+function compassOnClick(e) {
+  if (map.getBearing()!=0) {
+    map.animateTo({ bearing: 0 });
+  } else {
+      let newPitch = map.getPitch()!=0 ? 0 : defaultPitch;
+      //map.animateTo({pitch: newPitch });
+      //animateto fails here for some reason if clicked from compass (maptalks-gl@0.124.4 issue)
+      customAnimateTo(map, { pitch: newPitch });
+  }
+}
 
 function popupOnClick(e) {
   //console.log('clicked', e.target.feature);
@@ -1024,7 +1049,7 @@ function loadMap(mapId) {
 
   localData.mapId = mapId;
 
-  let compassControl = new maptalks.control.Compass({position  : 'bottom-right'}).addTo(map)._compass.onclick = (e)=>map.getBearing()==0 && map.animateTo({ pitch: map.getPitch()==0 ? defaultPitch : 0 })
+  let compassControl = new maptalks.control.Compass({position  : 'bottom-right'}).addTo(map)._compass.onclick = compassOnClick;
 
   searchControl = new SearchControl(null, {theme:theme});
   searchControl._handleSubmit = function() {
@@ -1118,11 +1143,7 @@ window.onload = function(event) {
     }
 
     if (e.code=='KeyR' && !e.ctrlKey) {
-      if (map.getBearing()!=0) {
-        map.animateTo({ bearing: 0 });
-      } else {
-        map.animateTo({ pitch: map.getPitch()==0 ? defaultPitch : 0 });
-      }
+      compassOnClick();
     }
 
     switch (e.code) {
