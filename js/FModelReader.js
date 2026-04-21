@@ -65,7 +65,7 @@ function markerLoader(data) {
   let components = {};
 
   const getObjectName = t => t.ObjectName.split("'")[1];
-  const getAssetName = t => t.AssetPathName ? t.AssetPathName.split(".")[1] : 'unknown';
+  const getAssetName = t => t.AssetPathName ? t.AssetPathName.split(".")[1] : t;
   const getName = t => t.ObjectName ? getObjectName(t) : getAssetName(t);
 
   function getMatrix(o, matrix) {
