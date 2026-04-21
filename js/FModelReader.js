@@ -5,8 +5,8 @@
 
 // GitHub doesn't allow files larger than 100Mb, so we use gzip
 
-async function loadGzip(url, callback, batchSize = 16 * 1024 * 1024) {
-  console.time('loading gzip');
+async function loadGzip(url, callback) {
+  console.time('loaded gzip');
   if (!('DecompressionStream' in window)) {
     console.error('DecompressionStream not supported.');
     return;
@@ -16,45 +16,44 @@ async function loadGzip(url, callback, batchSize = 16 * 1024 * 1024) {
   const ds = new DecompressionStream('gzip');
   const decompressedStream = response.body.pipeThrough(ds);
   const reader = decompressedStream.getReader();
-  const decoder = new TextDecoder();
-  let result = '';
-  let buffer = '';
+  
+  let chunks = [];
+  let totalLength = 0;
   let isFirstChunk = true;
   
   function pump() {
     reader.read().then(({ done, value }) => {
       if (done) {
-        result += buffer + decoder.decode();
-        console.timeEnd('loading gzip');
+        const result = new Uint8Array(totalLength);
+        let offset = 0;
+        for (const chunk of chunks) {
+          result.set(chunk, offset);
+          offset += chunk.length;
+        }
+        console.timeEnd('loaded gzip');
         callback(result);
         return;
       }
       
-      let chunk = decoder.decode(value, { stream: true });
+      let chunk = value;
       
-      // Strip BOM from the first chunk only
-      if (isFirstChunk && chunk.length > 0) {
-        if (chunk.charCodeAt(0) === 0xFEFF || chunk[0] === '\uFEFF') {
-          chunk = chunk.slice(1);
+      // Strip BOM from first chunk
+      if (isFirstChunk && chunk.length >= 3) {
+        if (chunk[0] === 0xEF && chunk[1] === 0xBB && chunk[2] === 0xBF) {
+          chunk = chunk.slice(3);
         }
         isFirstChunk = false;
       }
       
-      buffer += chunk;
+      chunks.push(chunk);
+      totalLength += chunk.length;
       
-      if (buffer.length >= batchSize) {
-        result += buffer;
-        buffer = '';
-        setTimeout(pump, 0);
-      } else {
-        pump();
-      }
+      pump();
     });
   }
+  
   pump();
 }
-
-
 
 function markerLoader(data) {
   let area = 'Supraland';
@@ -204,6 +203,65 @@ function markerLoader(data) {
   return features;
 }
 
+function parseLargeJSONArray(buffer) {
+  console.time('parsed buffer');
+  return new Promise((resolve, reject) => {
+    const results = [];
+    let position = 0;
+    let depth = 0;
+    let inString = false;
+    let escapeNext = false;
+    let objectStart = -1;
+    
+    while (position < buffer.length) {
+      const byte = buffer[position];
+      const char = String.fromCharCode(byte);
+      
+      // Handle string boundaries
+      if (!escapeNext && char === '"') {
+        inString = !inString;
+      }
+      
+      // Handle escape sequences
+      if (!escapeNext && char === '\\') {
+        escapeNext = true;
+      } else {
+        escapeNext = false;
+      }
+      
+      // Only track JSON structure when not inside a string
+      if (!inString) {
+        if (char === '{') {
+          if (depth === 0) {
+            objectStart = position;
+          }
+          depth++;
+        } else if (char === '}') {
+          depth--;
+          if (depth === 0 && objectStart !== -1) {
+            // Extract and parse one complete object
+            const objectBuffer = buffer.slice(objectStart, position + 1);
+            const objectStr = new TextDecoder().decode(objectBuffer);
+            try {
+              const obj = JSON.parse(objectStr);
+              results.push(obj);
+            } catch (e) {
+              reject(new Error(`Failed to parse object at position ${objectStart}: ${e.message}`));
+              return;
+            }
+            objectStart = -1;
+          }
+        }
+      }
+      
+      position++;
+    }
+    
+    console.timeEnd('parsed buffer');
+    resolve(results);
+  });
+}
+
 ////////////////////////////////////////////////////////////////////////
 
 if (typeof require !== 'undefined' && require.main === module) {
@@ -217,18 +275,29 @@ if (typeof require !== 'undefined' && require.main === module) {
   console.time('loading gzip');
 
   for (fname of [
+    //"../data/Supraworld.9016.json.gz",
     "../data/Supraworld.10596.json.gz",
   ]) {
     zlib.gunzip(fs.readFileSync(fname), (err, buffer) => {
       console.timeEnd('loading gzip');
       if (err) throw err;
-      let data = JSON.parse(buffer);
-      let features = markerLoader(data);
-      const json = JSON.stringify(features, null, 2);
-      let outname = 'out.json';
-      fs.writeFileSync(outname, json, 'utf8');
-      console.log(`saved to ${outname} (${features.length} features)`);
+      console.log('loaded gzip, buffer length is', buffer.length);
+
+      //let data = JSON.parse(buffer);
+      console.time('parsing json');
+
+      parseLargeJSONArray(buffer).then(data => {
+        console.timeEnd('parsing json');
+        console.log('parsed JSON, data length is', data.length);
+        let features = markerLoader(data);
+        const json = JSON.stringify(features, null, 2);
+        let outname = 'out.json';
+        fs.writeFileSync(outname, json, 'utf8');
+        console.log(`saved to ${outname} (${features.length} features)`);
+      }).catch(err => {
+        console.error('Parsing failed:', err);
+      });
+
     });
   }
 }
-
