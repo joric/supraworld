@@ -32,7 +32,7 @@
   "gift-box-gold": { "class": "fa fa-gift", "color": "goldenrod" },
   "battery_slot": { "class": "fa fa-battery-empty", "color": "slategrey" },
   "fan": { "class": "fa fa-fan", "color": "green" },
-  "ghost": { "class": "fa fa-ghost", "color": "limegreen" },
+  "ghost": { "class": "fa fa-ghost", "color": "darkorchid" },
   "thought": { "class": "fa fa-comment-dots", "color": "limegreen" },
   "walk": { "class": "fa fa-person-walking", "color": "limegreen" },
   "run": { "class": "fa fa-person-running", "color": "limegreen" },
@@ -51,7 +51,6 @@
   "achievement": { "class": "fa fa-star", "color": "green" },
   "candle": { "class": "fa fa-hockey-puck", "color": "tan" },
   "roam": { "class": "fa fa-person-walking", "color": "grey" },
-  "ghost": { "class": "fa fa-ghost", "color": "grey" },
   "move": { "class": "fa fa-arrow-right-arrow-left", "color": "grey" },
   "sound": { "class": "fa fa-volume-high", "color": "grey" },
 

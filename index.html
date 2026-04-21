@@ -410,7 +410,7 @@ function popupOnClick(e) {
 
   let contentElement = popup.firstElementChild;
 
-  e.target._infoWindow.setOptions({custom: true, dy: -12 });
+  e.target._infoWindow.config({custom: true, dy: -12 });
   e.target._infoWindow.setContent(contentElement);
 
   contentElement.addEventListener('contextmenu', function(e) { e.stopPropagation()}, true); // enable default context menu

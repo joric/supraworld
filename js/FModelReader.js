@@ -65,7 +65,7 @@ function markerLoader(data) {
   let components = {};
 
   const getObjectName = t => t.ObjectName.split("'")[1];
-  const getAssetName = t => t.AssetPathName.split(".")[1];
+  const getAssetName = t => t.AssetPathName ? t.AssetPathName.split(".")[1] : 'unknown';
   const getName = t => t.ObjectName ? getObjectName(t) : getAssetName(t);
 
   function getMatrix(o, matrix) {
@@ -175,7 +175,7 @@ function markerLoader(data) {
         }
       }
 
-      if (p.RequiredAbilities) prop.abilities = p.RequiredAbilities;
+      if (p.RequiredAbilities) prop.abilities = p.RequiredAbilities.map(t => getName(t));
       if (p.Area && p.Area.TagName) prop.area = p.Area.TagName;
       if (p.ProgressionGroup &&  p.ProgressionGroup.TagName) prop.progression = p.ProgressionGroup.TagName;
 
