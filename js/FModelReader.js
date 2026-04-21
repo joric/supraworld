@@ -218,7 +218,6 @@ function markerLoader(data) {
 }
 
 function parseLargeJSONArrayExt(buffer) {
-  console.time('parsed buffer');
   return new Promise((resolve, reject) => {
     const results = [];
     let position = 0;
@@ -270,8 +269,6 @@ function parseLargeJSONArrayExt(buffer) {
       
       position++;
     }
-    
-    console.timeEnd('parsed buffer');
     resolve(results);
   });
 }
@@ -279,12 +276,26 @@ function parseLargeJSONArrayExt(buffer) {
 function parseLargeJSONArray(buffer) {
   console.time('parsed buffer');
   return new Promise((resolve, reject) => {
-    const decoder = new TextDecoder('utf-8');
-    const jsonString = decoder.decode(buffer);
-    let results = JSON.parse(jsonString);
-    console.timeEnd('parsed buffer');
-    resolve(results);
-  })
+    try {
+      const decoder = new TextDecoder('utf-8');
+      const jsonString = decoder.decode(buffer);
+      let results = JSON.parse(jsonString);
+      console.timeEnd('parsed buffer');
+      resolve(results);
+    } catch (error) {
+      console.warn('Standard parsing failed, trying extended parser:', error.message);
+      // Fall back to extended parser
+      parseLargeJSONArrayExt(buffer)
+        .then(results => {
+          console.timeEnd('parsed buffer');
+          resolve(results);
+        })
+        .catch(extError => {
+          console.timeEnd('parsed buffer');
+          reject(extError);
+        });
+    }
+  });
 }
 
 ////////////////////////////////////////////////////////////////////////
