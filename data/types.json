@@ -428,8 +428,8 @@
       "LaunchBox_C": { "icon": "launchbox", "group": "teleports", "title": "Launch Box" },
       "LaunchBox_C:target": { "icon": "launchbox_target", "group": "teleports", "title": "Launch Box Target" },
 
-      "Balloon_C": { "icon": "balloon", "group": "items", "title": "Balloon" },
-      "Balloon_C:target": { "icon": "jumppad_target", "group": "items", "title": "Balloon Target" },
+      "Balloon_C": { "icon": "balloon", "group": "teleports", "title": "Balloon" },
+      "Balloon_C:target": { "icon": "jumppad_target", "group": "teleports", "title": "Balloon Target" },
 
       "RubberBand_C": { "icon": "rubber_band", "group": "teleports", "title": "Rubber Band" },
       "RubberBand_C:target": { "icon": "rubber_band_target", "group": "teleports", "title": "Jump Target" },
