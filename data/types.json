@@ -456,6 +456,7 @@
       "DashLauncher_C:target": { "icon": "jumppad_target", "group": "teleports", "title": "Jump Target" },
 
       "Pickup_Thread_C": { "icon": "spool", "group": "collectible", "title": "Spool of Thread" },
+      "Handcuffs_C": { "icon": "handcuffs", "group": "carriables", "title": "Handcuffs" },
 
       "DoorSlideCard_1_C": { "icon": "playing_card", "group": "items", "category": "Playing Card", "title": "Playing Card" },
       "DoorSlideCard_2_C": { "icon": "playing_card", "group": "items", "category": "Playing Card", "title": "Playing Card" },

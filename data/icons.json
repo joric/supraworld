@@ -211,6 +211,7 @@
   "dash_launcher": { "class": "fa fa-bolt", "color": "red" },
 
   "spool": { "class": "fa fa-database", "color": "dimgrey" },
+  "handcuffs": { "class": "fa fa-handcuffs", "color": "slategrey" },
 
   "translator": { "class": "fa fa-language", "color": "dimgrey" },
 
