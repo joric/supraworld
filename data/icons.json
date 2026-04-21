@@ -14,7 +14,7 @@
   "npc-yellow": { "class": "fa fa-person", "color": "goldenrod" },
   "die": { "class": "fa fa-dice", "color": "slategrey" },
   "raft": { "class": "fa fa-ship", "color": "chocolate" },
-  "health_dispencer": { "class": "fa fa-pills", "color": "red" },
+  "health_dispencer": { "class": "fa fa-capsules", "color": "red" },
   "button_battery": { "class": "fa fa-circle-plus", "color": "slategrey" },
   "button_battery_slot": { "class": "fa fa-circle-notch", "color": "slategrey" },
   "gumball_machine": { "class": "fa fa-blender", "color": "red" },
