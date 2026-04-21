@@ -217,7 +217,7 @@ function markerLoader(data) {
   return features;
 }
 
-function parseLargeJSONArray(buffer) {
+function parseLargeJSONArrayExt(buffer) {
   console.time('parsed buffer');
   return new Promise((resolve, reject) => {
     const results = [];
@@ -274,6 +274,17 @@ function parseLargeJSONArray(buffer) {
     console.timeEnd('parsed buffer');
     resolve(results);
   });
+}
+
+function parseLargeJSONArray(buffer) {
+  console.time('parsed buffer');
+  return new Promise((resolve, reject) => {
+    const decoder = new TextDecoder('utf-8');
+    const jsonString = decoder.decode(buffer);
+    let results = JSON.parse(jsonString);
+    console.timeEnd('parsed buffer');
+    resolve(results);
+  })
 }
 
 ////////////////////////////////////////////////////////////////////////
