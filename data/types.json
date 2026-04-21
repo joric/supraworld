@@ -361,7 +361,7 @@
       "SupraEABlockingVolume_C": { "icon": "ea_volume", "group": "misc", "title": "EA Blocking Volume" },
       "NPCManagerVolume_C": { "icon": "trigger_volume", "group": "misc", "title": "NPC Manager Volume" },
       "RoamPoint_C": { "icon": "roam", "group": "misc", "title": "Roam Point" },
-      "GhostPoint_C": { "icon": "ghost", "group": "NPCs", "title": "Ghost Point" },
+      "GhostPoint_C": { "icon": "ghost", "group": "NPCs", "title": "Ghost" },
       "EnemyArenaProxy_C": { "icon": "trigger_volume", "group": "misc", "title": "Enemy Arena" },
       "LED_C": { "icon": "led", "group": "misc", "title": "LED" },
       "MetalLeverButton_C": { "icon": "button", "group": "items", "title": "Metal Lever Button" },
