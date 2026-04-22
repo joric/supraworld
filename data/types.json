@@ -335,7 +335,7 @@
       "Pickup_Rune_C": { "icon": "rune", "group": "items", "title": "Rune Spawner" },
       "PresentBox_C": { "icon": "gift-box-red", "group": "collectible", "category": "Gift Box", "title": "Present Box" },
 
-      "=PresentBox_Lootpools_C": { "icon": "gift-box-blue", "group": "misc", "title": "Random Loot" },
+      "PresentBox_Lootpools_C": { "icon": "gift-box-blue", "group": "collectible", "title": "Random Loot" },
 
       "_LootPool_C": { "icon": "gift-box-blue", "group": "collectible", "title": "Random Loot" },
 
