@@ -153,7 +153,9 @@ function markerLoader(data) {
 
   for (const o of data) {
     //if (!types[o.Type]) continue;
-    if (!o.Type.endsWith('_C') && !o.Type.includes('TextRenderActor')) continue; // supraland filter
+    if (!o.Type.endsWith('_C') && !o.Type.includes('TextRenderActor') && !o.Type.includes('StaticMeshActor')) continue; // supraland filter
+
+    if (o.Type.includes('TargetComponent')) continue;
 
     let c = getLocation(o, area);
 
@@ -201,6 +203,8 @@ function markerLoader(data) {
         }
       }
     }
+
+    if (o.Type=='StaticMeshActor' && !prop.material) continue; // do not add actors without material
 
     if ((m = messengers[o.Name]) && (s = m.Properties?.MessageEvents?.[0]?.TargetActor?.SubPathString)) {
       prop.actor = s.split('.').pop();

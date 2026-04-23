@@ -214,6 +214,7 @@
 
   "translator": { "class": "fa fa-language", "color": "dimgrey" },
 
+  "poker_chip": { "class": "fa fa-circle-dot", "color": "white", "background": "red"},
   "playing_card": { "class": "fa fa-diamond", "color": "white", "background": "red"}
 
 }

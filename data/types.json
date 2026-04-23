@@ -269,6 +269,14 @@
         }
       },
 
+      "StaticMeshActor": {
+        "match": {
+          "material": {
+            "Poker_Chip_*|Chip_Plastic_*": {"icon": "poker_chip", "group": "items", "title": "Poker Chip", "category":"Poker Chip"}
+          }
+        }
+      },
+
       "Piratehat_C": { "icon": "hat", "group": "carriables", "title": "Pirate Hat" },
       "Popcorn_C": { "icon": "popcorn", "group": "carriables", "title": "Popcorn" },
       "Respirator_C": { "icon": "gas_mask", "group": "carriables", "title": "Gas Mask" },
