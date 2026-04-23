@@ -284,7 +284,21 @@ let getType2 = function(o) {
       // 2) regex match from cache
       const cached = regexCache.get(node)?.[field] || [];
       for (const r of cached) {
-        if (r.re.test(value)) return rec(r.entry, { ...t, category: value, ...prop });
+        const matches = value.match(r.re);
+        if (matches) {
+
+          const entry = Object.fromEntries(
+            Object.entries(r.entry).map(([key, propValue]) => {
+              return [
+                key,
+                typeof propValue === 'string'
+                  ? propValue.replace(/\\\d+/g, m => matches[parseInt(m.slice(1))] || '')
+                  : propValue
+              ];
+            })
+          );
+          return rec(entry, { ...t, category: value, ...prop });
+        }
       }
     }
 
@@ -362,7 +376,7 @@ function getSubtitle(feature) {
 
   if (o.coins) return `${o.coins} coins`;
 
-  let title = o.text || o.achievement || s;
+  let title = o.text || o.achievement || t.color || s;
 
   if (!title) {
     if (o.area) title = o.area.replace('Supraworld.Area.','');

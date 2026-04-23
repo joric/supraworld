@@ -272,7 +272,7 @@
       "StaticMeshActor": {
         "match": {
           "material": {
-            "Poker_Chip_*|Chip_Plastic_*": {"icon": "poker_chip", "group": "items", "title": "Poker Chip", "category":"Poker Chip"}
+            "(?:Poker_Chip_|Chip_Plastic_)(.+)": {"color": "\\1", "icon": "poker_chip", "group": "items", "title": "Poker Chip", "category":"Poker Chip"}
           }
         }
       },
