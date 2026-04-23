@@ -286,8 +286,7 @@ let getType2 = function(o) {
       for (const r of cached) {
         const matches = value.match(r.re);
         if (matches) {
-
-          const entry = Object.fromEntries(
+          const entry = matches.length === 1 ? r.entry : Object.fromEntries(
             Object.entries(r.entry).map(([key, propValue]) => {
               return [
                 key,
