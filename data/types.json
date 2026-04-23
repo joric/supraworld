@@ -364,7 +364,15 @@
 
       "CornerMetalScrew_C": { "icon": "screw", "group": "misc", "title": "Corner Screw" },
       "Tack_C": { "icon": "tack", "group": "misc", "title": "Tack" },
-      "SupraVolumeBase_C": { "icon": "trigger_volume", "group": "misc", "title": "Volume Base" },
+
+      "SupraVolumeBase_C": { "icon": "trigger_volume", "group": "misc", "title": "Volume Base",
+        "match": {
+          "actor": {
+            "FloorIsLava_C.*" : {"icon": "poker_chip", "group": "items", "title": "Poker Chip", "category":"Poker Chip"}
+          }
+        }
+      },
+
       "SupraBlockingVolume_C": { "icon": "trigger_volume", "group": "misc", "title": "Blocking Volume" },
       "SupraEABlockingVolume_C": { "icon": "ea_volume", "group": "misc", "title": "EA Blocking Volume" },
       "NPCManagerVolume_C": { "icon": "trigger_volume", "group": "misc", "title": "NPC Manager Volume" },
