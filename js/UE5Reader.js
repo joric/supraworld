@@ -1,5 +1,6 @@
 // not really an UE5 reader just yet, rather a stub, reads supraworld entries
-// joric, 2026
+// probably should just save Dynamic Save deserializer-compatible json instead
+// see https://github.com/localcc/gvas/issues/134 on how to read property tags
 
 class UESaveObject {
   constructor(binstr) {
