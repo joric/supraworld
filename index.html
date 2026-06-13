@@ -129,6 +129,7 @@ let maps = {
       '7925': { date: '2025-09-08', tiles: 'tiles/sw/V4/{z}/{x}/{y}.jpg', data: 'data/Supraworld.7925.json.gz'},
       '9016': { date: '2025-11-14', tiles: 'tiles/sw/V5/{z}/{x}/{y}.jpg', data: 'data/Supraworld.9016.json.gz'},
       '10596': { date: '2026-04-08', tiles: 'tiles/sw/V8/{z}/{x}/{y}.jpg', data: 'data/Supraworld.10596.json.gz'},
+      '10958b': { date: '2026-05-18', tiles: 'tiles/sw/V8/{z}/{x}/{y}.jpg', data: 'data/Supraworld.10958b.json.gz'},
     },
    },
 
@@ -1020,9 +1021,11 @@ function loadMap(mapId) {
 
   settings = localData[mapId];
 
+  const cmpAlphaNum = (a,b) => a[0].localeCompare(b[0], 'en', { numeric: true });
+
   if (config.versions) {
     settings.version = settings.version || config.versions && Object.keys(config.versions)[Object.keys(config.versions).length-1];
-    document.querySelector('.version').innerHTML = `<select>${Object.entries(config.versions).sort((a,b)=>b[0]-a[0]).map(([key,value])=>`<option value="${key}"${key==settings.version?' selected':''}>Version ${key} (${new Date(value.date).toLocaleDateString("en",{day:"numeric",month:"short",year:"numeric"})})</option>`).join('')}</select>`;
+    document.querySelector('.version').innerHTML = `<select>${Object.entries(config.versions).sort((a,b)=>-cmpAlphaNum(a,b)).map(([key,value])=>`<option value="${key}"${key==settings.version?' selected':''}>Version ${key} (${new Date(value.date).toLocaleDateString("en",{day:"numeric",month:"short",year:"numeric"})})</option>`).join('')}</select>`;
     document.querySelector('.version select').onchange = e=> {
       settings.version = e.target.value;
       saveSettings();
